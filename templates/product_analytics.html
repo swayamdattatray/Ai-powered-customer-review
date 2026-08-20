@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Product Analytics</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #719fe2;
+            color: #222;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .header {
+            background: #5ed2dd;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .header p {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        /* =========================
+           CONTAINER
+        ========================= */
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 25px auto 50px auto;
+        }
+
+        /* =========================
+           BACK BUTTON
+        ========================= */
+
+        .navigation {
+            margin-bottom: 20px;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: #1f4e79;
+            color: white;
+            padding: 13px 22px;
+            border-radius: 7px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-button:hover {
+            background: #163a5c;
+        }
+
+        /* =========================
+           MAIN CARD
+        ========================= */
+
+        .section-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-top: 0;
+            font-size: 26px;
+        }
+
+        .section-description {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #555;
+        }
+
+        /* =========================
+           SUMMARY
+        ========================= */
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
+        }
+
+        .summary-card h3 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .summary-card p {
+            margin-bottom: 0;
+        }
+
+        .positive {
+            color: #198754;
+        }
+
+        .neutral {
+            color: #f0ad4e;
+        }
+
+        .negative {
+            color: #dc3545;
+        }
+
+        /* =========================
+           PRODUCT CARD
+        ========================= */
+
+        .product-card {
+            margin-top: 25px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #1f4e79;
+        }
+
+        .product-card h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #1f4e79;
+            font-size: 21px;
+        }
+
+        .product-total {
+            font-weight: bold;
+            margin-bottom: 18px;
+        }
+
+        /* =========================
+           PRODUCT SENTIMENT CARDS
+        ========================= */
+
+        .sentiment-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
+        }
+
+        .sentiment-card h4 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .sentiment-card p {
+            margin-bottom: 0;
+            margin-top: 8px;
+        }
+
+        /* =========================
+           EMPTY MESSAGE
+        ========================= */
+
+        .empty-message {
+            text-align: center;
+            color: #666;
+            padding: 30px;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #777;
+            font-size: 14px;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 900px) {
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 94%;
+            }
+
+            .header h1 {
+                font-size: 23px;
+            }
+
+            .section-card {
+                padding: 20px;
+            }
+
+            .product-card {
+                padding: 18px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<div class="header">
+
+    <h1>
+        Product-wise Analytics
+    </h1>
+
+    <p>
+        Customer sentiment analysis by product
+    </p>
+
+</div>
+
+
+<div class="container">
+
+
+    <!-- =========================
+         BACK TO DASHBOARD
+    ========================= -->
+
+    <div class="navigation">
+
+        <a href="{{ url_for('home') }}"
+           class="back-button">
+
+            ← Back to Dashboard
+
+        </a>
+
+    </div>
+
+
+    <!-- =========================
+         PRODUCT ANALYTICS
+    ========================= -->
+
+    <div class="section-card">
+
+        <h2 class="section-title">
+
+            Product Analytics
+
+        </h2>
+
+
+        <p class="section-description">
+
+            Sentiment distribution for each product
+            based on customer reviews.
+
+        </p>
+
+
+        {% if product_analytics %}
+
+
+            {% for product, data in product_analytics.items() %}
+
+
+                <div class="product-card">
+
+
+                    <!-- PRODUCT NAME -->
+
+                    <h3>
+
+                        {{ product }}
+
+                    </h3>
+
+
+                    <!-- TOTAL REVIEWS -->
+
+                    <p class="product-total">
+
+                        Total Reviews:
+                        {{ data.total }}
+
+                    </p>
+
+
+                    <!-- SENTIMENT -->
+
+                    <div class="summary-grid">
+
+
+                        <!-- POSITIVE -->
+
+                        <div class="sentiment-card positive">
+
+                            <h4>
+
+                                {{ data.positive }}
+
+                            </h4>
+
+                            <p>
+
+                                Positive
+
+                            </p>
+
+                        </div>
+
+
+                        <!-- NEUTRAL -->
+
+                        <div class="sentiment-card neutral">
+
+                            <h4>
+
+                                {{ data.neutral }}
+
+                            </h4>
+
+                            <p>
+
+                                Neutral
+
+                            </p>
+
+                        </div>
+
+
+                        <!-- NEGATIVE -->
+
+                        <div class="sentiment-card negative">
+
+                            <h4>
+
+                                {{ data.negative }}
+
+                            </h4>
+
+                            <p>
+
+                                Negative
+
+                            </p>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            {% endfor %}
+
+
+        {% else %}
+
+
+            <p class="empty-message">
+
+                No product reviews are available yet.
+
+                Add customer reviews from the dashboard
+                to see product analytics here.
+
+            </p>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+    <!-- =========================
+         FOOTER
+    ========================= -->
+
+    <div class="footer">
+
+        AI-Powered Customer Review Intelligence Platform
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>

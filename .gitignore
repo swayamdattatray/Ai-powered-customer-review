@@ -1,0 +1,12 @@
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.sqlite
+*.sqlite3
+customer_reviews.db
+.env
+.env.*
+!.env.example
+.pytest_cache/
+.vscode/
