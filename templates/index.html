@@ -1,2243 +1,971 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Customer Review Intelligence</title>
-
+    <title>ReviewInsight AI — AI Customer Review Intelligence Agent</title>
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-
-        /* =========================================================
-           GLOBAL
-        ========================================================= */
+        :root {
+            --sidebar-bg: #0f172a;
+            --sidebar-hover: #1e293b;
+            --primary-blue: #2563eb;
+            --primary-hover: #1d4ed8;
+            --body-bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --success: #16a34a;
+            --success-bg: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-bg: #fffbeb;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+        }
 
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f7f9fd;
-            color: #10204a;
-        }
-
-        a {
-            text-decoration: none;
-        }
-
-
-        /* =========================================================
-           HEADER
-        ========================================================= */
-
-        .top-header {
-            height: 82px;
-            background: #ffffff;
-            border-bottom: 1px solid #dfe5f0;
-
+            background-color: var(--body-bg);
+            color: var(--text-main);
             display: flex;
-            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* ================= SIDEBAR ================= */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
             justify-content: space-between;
-
-            padding: 0 28px;
-
-            position: sticky;
-            top: 0;
+            padding: 24px 16px;
+            position: fixed;
+            height: 100vh;
             z-index: 100;
         }
 
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-
-        .brand-logo {
-            width: 44px;
-            height: 44px;
-
-            background: #2563eb;
-            color: white;
-
-            border-radius: 9px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 22px;
-            font-weight: bold;
-
-            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.20);
-        }
-
-
-        .brand-text h1 {
-            margin: 0;
-            font-size: 20px;
-            color: #10204a;
-        }
-
-
-        .brand-text p {
-            margin: 5px 0 0;
-            color: #64708d;
-            font-size: 14px;
-        }
-
-
-        /* =========================================================
-           HEADER BUTTONS
-        ========================================================= */
-
-        .header-actions {
-            display: flex;
-            gap: 14px;
-        }
-
-
-        .header-button {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-
-            padding: 11px 18px;
-
-            background: #ffffff;
-            color: #1557d6;
-
-            border: 1px solid #d8e1f0;
-            border-radius: 7px;
-
-            font-size: 14px;
-            font-weight: bold;
-
-            transition: 0.2s;
-        }
-
-
-        .header-button:hover {
-            background: #f1f5ff;
-            border-color: #b9cbed;
-        }
-
-
-        .header-icon {
-            font-size: 18px;
-            color:rgb(215, 53, 191);
-        }
-
-
-        /* =========================================================
-           MAIN
-        ========================================================= */
-
-        .main-container {
-            width: 96%;
-            max-width: 1480px;
-
-            margin: 0 auto;
-            padding: 22px 0 0;
-        }
-
-
-        /* =========================================================
-           HERO
-        ========================================================= */
-
-        .hero {
-            text-align: center;
-            padding: 4px 0 20px;
-        }
-
-
-        .hero h2 {
-            margin: 0;
-
-            font-size: 30px;
-            line-height: 1.2;
-
-            color: #10204a;
-        }
-
-
-        .hero p {
-            margin: 10px 0 0;
-
-            font-size: 16px;
-            color: #596783;
-        }
-
-
-        /* =========================================================
-           STAT CARDS
-        ========================================================= */
-
-        .stats-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(4, minmax(0, 1fr));
-
-            gap: 18px;
-
-            margin-bottom: 14px;
-        }
-
-
-        .stat-card {
-            background: #ffffff;
-
-            border: 1px solid #e2e8f2;
-
-            border-radius: 12px;
-
-            min-height: 128px;
-
-            padding: 24px;
-
-            display: flex;
-            align-items: center;
-
-            gap: 18px;
-
-            box-shadow:
-                0 2px 6px rgba(20, 35, 70, 0.05);
-        }
-
-
-        .stat-icon {
-            width: 72px;
-            height: 72px;
-
-            border-radius: 16px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 32px;
-
-            flex-shrink: 0;
-        }
-
-
-        .stat-icon.blue {
-            background: #edf3ff;
-            color: #1761e8;
-        }
-
-
-        .stat-icon.green {
-            background: #eaf8ef;
-            color: #16a34a;
-        }
-
-
-        .stat-icon.orange {
-            background: #fff5df;
-            color: #f59e0b;
-        }
-
-
-        .stat-icon.red {
-            background: #ffeded;
-            color: #ef2b2b;
-        }
-
-
-        .stat-content {
-            min-width: 0;
-        }
-
-
-        .stat-title {
-            margin: 0 0 10px;
-
-            font-size: 15px;
-            font-weight: normal;
-
-            color: #24345e;
-        }
-
-
-        .stat-number {
-            margin: 0;
-
-            font-size: 30px;
-            line-height: 1;
-
-            font-weight: bold;
-        }
-
-
-        .stat-number.blue {
-            color: #10204a;
-        }
-
-
-        .stat-number.green {
-            color: #16a34a;
-        }
-
-
-        .stat-number.orange {
-            color: #f59e0b;
-        }
-
-
-        .stat-number.red {
-            color: #ef2b2b;
-        }
-
-
-        .stat-subtitle {
-            margin: 9px 0 0;
-
-            font-size: 13px;
-            color: #68748e;
-        }
-
-
-        /* =========================================================
-           MAIN CONTENT GRID
-        ========================================================= */
-
-        .content-grid {
-            display: grid;
-
-            grid-template-columns:
-                minmax(0, 1.02fr)
-                minmax(0, 1.18fr);
-
-            gap: 10px;
-
-            align-items: start;
-        }
-
-
-        .left-column,
-        .right-column {
-            min-width: 0;
-        }
-
-
-        /* =========================================================
-           COMMON CARD
-        ========================================================= */
-
-        .panel {
-            background: #ffffff;
-
-            border: 1px solid #e2e8f2;
-
-            border-radius: 10px;
-
-            padding: 22px;
-
-            box-shadow:
-                0 2px 6px rgba(20, 35, 70, 0.04);
-
-            margin-bottom: 10px;
-        }
-
-
-        .panel-title {
-            margin: 0;
-
-            font-size: 19px;
-            color: #10204a;
-        }
-
-
-        .panel-description {
-            margin: 8px 0 16px;
-
-            font-size: 14px;
-            color: #65718c;
-        }
-
-
-        /* =========================================================
-           REVIEW FORM
-        ========================================================= */
-
-        .form-row {
-            display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
-
-            gap: 26px;
-
-            margin-bottom: 16px;
-        }
-
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-
-        .form-row .form-group {
-            margin-bottom: 0;
-        }
-
-
-        .form-group label {
-            display: block;
-
-            margin-bottom: 8px;
-
-            font-size: 14px;
-            font-weight: bold;
-
-            color: #182750;
-        }
-
-
-        .form-input,
-        .form-textarea,
-        .form-select {
-            width: 100%;
-
-            border: 1px solid #d6dfed;
-
-            background: #ffffff;
-
-            border-radius: 7px;
-
-            padding: 11px 12px;
-
-            font-family: Arial, Helvetica, sans-serif;
-
-            font-size: 14px;
-
-            color: #17264e;
-
-            outline: none;
-
-            transition: 0.2s;
-        }
-
-
-        .form-input:focus,
-        .form-textarea:focus,
-        .form-select:focus {
-            border-color: #2563eb;
-
-            box-shadow:
-                0 0 0 3px rgba(37, 99, 235, 0.08);
-        }
-
-
-        .form-textarea {
-            min-height: 98px;
-
-            resize: vertical;
-
-            line-height: 1.55;
-        }
-
-
-        /* =========================================================
-           RATING
-        ========================================================= */
-
-        .rating-area {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-
-            margin-top: 3px;
-        }
-
-
-        .star {
-            font-size: 24px;
-            color: #d5dce9;
-        }
-
-
-        .star.active {
-            color: #f59e0b;
-        }
-
-
-        .rating-text {
-            margin-left: 8px;
-
-            font-size: 14px;
-            color: #24345e;
-        }
-
-
-        /* =========================================================
-           ANALYZE BUTTON
-        ========================================================= */
-
-        .analyze-button {
-            width: 100%;
-
-            border: none;
-
-            border-radius: 7px;
-
-            background: #2563eb;
-
-            color: white;
-
-            padding: 12px 20px;
-
-            font-size: 14px;
-            font-weight: bold;
-
-            cursor: pointer;
-
-            margin-top: 2px;
-
-            transition: 0.2s;
-
-            box-shadow:
-                0 3px 8px rgba(37, 99, 235, 0.20);
-        }
-
-
-        .analyze-button:hover {
-            background: #1d4ed8;
-        }
-
-
-        /* =========================================================
-           SENTIMENT ANALYSIS
-        ========================================================= */
-
-        .review-box {
-            background: #f7f9ff;
-
-            border: 1px solid #dce5f8;
-
-            border-radius: 8px;
-
-            padding: 15px;
-
-            line-height: 1.6;
-
-            font-size: 14px;
-
-            color: #1d2b52;
-
-            margin-bottom: 10px;
-        }
-
-
-        .review-label {
-            display: block;
-
-            color: #1557d6;
-
-            font-weight: bold;
-
-            margin-bottom: 7px;
-        }
-
-
-        .prediction-box {
-            background: #f7f9ff;
-
-            border: 1px solid #dce5f8;
-
-            border-radius: 8px;
-
-            padding: 15px;
-        }
-
-
-        .prediction-label {
-            display: block;
-
-            color: #1557d6;
-
-            font-weight: bold;
-
-            margin-bottom: 9px;
-        }
-
-
-        .prediction-result {
+        .brand-header {
             display: flex;
             align-items: center;
             gap: 12px;
+            padding: 0 8px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-
-        .prediction-icon {
-            width: 46px;
-            height: 46px;
-
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #38bdf8, #2563eb);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-
-            border-radius: 12px;
-
-            font-size: 25px;
+            font-size: 20px;
         }
 
-
-        .prediction-icon.positive {
-            background: #e7f7ed;
-            color: #16a34a;
+        .brand-title h2 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.3px;
         }
 
-
-        .prediction-icon.neutral {
-            background: #fff4dd;
-            color: #f59e0b;
-        }
-
-
-        .prediction-icon.negative {
-            background: #ffe9e9;
-            color: #ef2b2b;
-        }
-
-
-        .prediction-text {
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-
-        .prediction-text.positive {
-            color: #16a34a;
-        }
-
-
-        .prediction-text.neutral {
-            color: #f59e0b;
-        }
-
-
-        .prediction-text.negative {
-            color: #ef2b2b;
-        }
-
-
-        /* =========================================================
-           CONFIDENCE BAR
-        ========================================================= */
-
-        .confidence-section {
-            margin-top: 12px;
-            padding: 12px;
-            background: #f7f9ff;
-            border: 1px solid #dce5f8;
-            border-radius: 8px;
-        }
-
-        .confidence-label {
-            font-size: 13px;
-            font-weight: bold;
-            color: #1557d6;
-            margin-bottom: 8px;
-        }
-
-        .confidence-bar-bg {
-            width: 100%;
-            height: 12px;
-            background: #e8ecf4;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        .confidence-bar-fill {
-            height: 100%;
-            border-radius: 6px;
-            transition: width 0.5s ease;
-        }
-
-        .confidence-bar-fill.high {
-            background: linear-gradient(90deg, #16a34a, #22c55e);
-        }
-
-        .confidence-bar-fill.medium {
-            background: linear-gradient(90deg, #f59e0b, #fbbf24);
-        }
-
-        .confidence-bar-fill.low {
-            background: linear-gradient(90deg, #ef4444, #f87171);
-        }
-
-        .confidence-value {
-            font-size: 13px;
-            color: #4b5875;
-            margin-top: 5px;
-        }
-
-
-        /* =========================================================
-           AI EXPLANATION
-        ========================================================= */
-
-        .ai-explanation {
-            margin-top: 12px;
-            padding: 12px;
-            background: #f0f4ff;
-            border: 1px solid #c7d7f7;
-            border-radius: 8px;
-        }
-
-        .ai-explanation-label {
-            font-size: 13px;
-            font-weight: bold;
-            color: #1557d6;
-            margin-bottom: 6px;
-        }
-
-        .ai-explanation-text {
-            font-size: 14px;
-            color: #263453;
-            line-height: 1.6;
-        }
-
-        .ai-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 4px 10px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border-radius: 5px;
+        .brand-title p {
             font-size: 11px;
-            font-weight: bold;
-            margin-top: 8px;
+            color: #94a3b8;
         }
 
-
-        /* =========================================================
-           FAKE REVIEW DETECTION
-        ========================================================= */
-
-        .fake-detection-panel {
-            margin-top: 10px;
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 20px;
+            list-style: none;
         }
 
-        .fake-result-box {
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid;
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.2s ease;
         }
 
-        .fake-result-box.authentic {
-            background: #effbf3;
-            border-color: #aee3bf;
+        .nav-item.active a,
+        .nav-item a:hover {
+            background-color: var(--primary-blue);
+            color: #ffffff;
         }
 
-        .fake-result-box.suspicious {
-            background: #fff2f2;
-            border-color: #f3b2b2;
-        }
-
-        .fake-result-header {
+        .sidebar-footer-card {
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 14px;
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 10px;
         }
 
-        .fake-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .fake-badge.authentic {
-            background: #dcf5e5;
-            color: #15803d;
-        }
-
-        .fake-badge.suspicious {
-            background: #ffe0e0;
-            color: #dc2626;
-        }
-
-        .fake-score-section {
-            margin: 10px 0;
-        }
-
-        .fake-score-bar-bg {
-            width: 100%;
-            height: 10px;
-            background: #e8ecf4;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .fake-score-bar-fill {
-            height: 100%;
-            border-radius: 5px;
-            transition: width 0.5s ease;
-        }
-
-        .fake-score-bar-fill.safe {
-            background: linear-gradient(90deg, #16a34a, #22c55e);
-        }
-
-        .fake-score-bar-fill.warning {
-            background: linear-gradient(90deg, #f59e0b, #fbbf24);
-        }
-
-        .fake-score-bar-fill.danger {
-            background: linear-gradient(90deg, #ef4444, #f87171);
-        }
-
-        .fake-score-text {
+        .sidebar-footer-card p {
             font-size: 12px;
-            color: #5f6b85;
+            color: #cbd5e1;
+            line-height: 1.4;
+        }
+
+        /* ================= MAIN WRAPPER ================= */
+        .main-wrapper {
+            margin-left: 250px;
+            flex: 1;
+            padding: 32px 40px;
+            max-width: 1400px;
+        }
+
+        /* Top Bar */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .top-headline h1 {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        .top-headline h1 span {
+            color: var(--primary-blue);
+        }
+
+        .top-headline p {
+            font-size: 14px;
+            color: var(--text-muted);
             margin-top: 4px;
         }
 
-        .fake-reason {
+        .user-nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .how-it-works-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
             font-size: 13px;
-            color: #263453;
-            line-height: 1.6;
-            margin-top: 8px;
-        }
-
-
-        /* =========================================================
-           ASPECT ANALYSIS
-        ========================================================= */
-
-        .aspect-list {
-            border: 1px solid #dce3ed;
-
-            border-radius: 8px;
-
-            overflow: hidden;
-
-            background: white;
-        }
-
-
-        .aspect-row {
-            min-height: 46px;
-
+            cursor: pointer;
             display: flex;
-
             align-items: center;
-
-            justify-content: space-between;
-
-            padding: 9px 12px;
-
-            border-bottom: 1px solid #e5e9f0;
+            gap: 5px;
+            font-weight: 600;
         }
 
-
-        .aspect-row:last-child {
-            border-bottom: none;
-        }
-
-
-        .aspect-name {
-            font-size: 14px;
-            font-weight: bold;
-
-            color: #15234c;
-        }
-
-
-        .aspect-badge {
-            padding: 6px 11px;
-
-            border-radius: 6px;
-
-            font-size: 12px;
-
-            font-weight: bold;
-        }
-
-
-        .aspect-badge.positive {
-            color: #159447;
-            background: #e9f8ef;
-        }
-
-
-        .aspect-badge.neutral {
-            color: #ed9200;
-            background: #fff5df;
-        }
-
-
-        .aspect-badge.negative {
-            color: #e92929;
-            background: #ffebeb;
-        }
-
-
-        /* =========================================================
-           INSIGHTS
-        ========================================================= */
-
-        .insight-count-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(3, 1fr);
-
-            gap: 10px;
-
-            margin-top: 13px;
-        }
-
-
-        .count-card {
-            border: 1px solid #dce4ef;
-
-            border-radius: 8px;
-
-            padding: 12px;
-
+        .user-profile {
             display: flex;
-
             align-items: center;
-
-            gap: 10px;
-
-            background: white;
+            gap: 8px;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
         }
 
-
-        .count-icon {
-            width: 40px;
-            height: 40px;
-
-            border-radius: 10px;
-
+        .user-avatar {
+            width: 26px;
+            height: 26px;
+            background: #93c5fd;
+            color: #1e3a8a;
+            border-radius: 50%;
             display: flex;
-
             align-items: center;
             justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
 
+        /* ================= SEARCH & ACTION BAR ================= */
+        .search-action-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+            margin-bottom: 24px;
+        }
+
+        .search-input-box {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+        }
+
+        .search-input-box input {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 15px;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .source-select {
+            background: #f1f5f9;
+            border: 1px solid transparent;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .btn-analyze {
+            background-color: var(--primary-blue);
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-analyze:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* ================= PRODUCT HEADER CARD ================= */
+        .product-header-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .product-identity {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .product-image-box {
+            width: 60px;
+            height: 60px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            border: 1px solid var(--border-color);
+        }
+
+        .product-details h2 {
             font-size: 20px;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
+        .badge-status {
+            background: var(--success-bg);
+            color: var(--success);
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .product-meta-row {
+            display: flex;
+            gap: 18px;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .product-meta-row strong {
+            color: #334155;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-outline {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+
+        .btn-outline:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .btn-primary-sm {
+            background: var(--primary-blue);
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        /* ================= METRIC CARDS GRID ================= */
+        .metric-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .metric-card-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .metric-value-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .metric-value-row.positive { color: var(--success); }
+        .metric-value-row.negative { color: var(--danger); }
+        .metric-value-row.neutral { color: var(--warning); }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--success);
+            border-radius: 4px;
+        }
+
+        .metric-subtext {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .key-takeaway-text {
+            font-size: 13px;
+            color: #334155;
+            font-weight: 600;
+            line-height: 1.45;
+            font-style: italic;
+        }
+
+        /* ================= 3-COLUMN ANALYTICS GRID ================= */
+        .analytics-main-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 1.5fr 1.3fr;
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+
+        .analytics-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .card-header-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 16px;
+        }
+
+        /* Sentiment Donut Layout */
+        .donut-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 10px 0;
+        }
+
+        .donut-circle {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .donut-inner-text {
+            position: absolute;
+            text-align: center;
+        }
+
+        .donut-inner-text strong {
+            font-size: 18px;
+            font-weight: 800;
+            display: block;
+            color: var(--text-main);
+        }
+
+        .donut-inner-text span {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .donut-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+        }
+
+        .legend-dot.pos { background: var(--success); }
+        .legend-dot.neu { background: #94a3b8; }
+        .legend-dot.neg { background: var(--danger); }
+
+        /* Aspect Bars */
+        .aspect-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .aspect-bar-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .aspect-name-label {
+            width: 90px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .aspect-meter-bg {
+            flex: 1;
+            height: 10px;
+            background: #f1f5f9;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .aspect-meter-fill {
+            height: 100%;
+            border-radius: 6px;
+        }
+
+        .aspect-meter-fill.pos { background: var(--success); }
+        .aspect-meter-fill.neg { background: var(--danger); }
+        .aspect-meter-fill.neu { background: var(--warning); }
+
+        .aspect-score-label {
+            width: 38px;
+            text-align: right;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        /* Topics (Liked & Complained) */
+        .topic-group-box {
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+
+        .topic-group-box.liked {
+            background: var(--success-bg);
+            border: 1px solid rgba(22, 163, 74, 0.15);
+        }
+
+        .topic-group-box.complained {
+            background: var(--danger-bg);
+            border: 1px solid rgba(239, 68, 68, 0.15);
+        }
+
+        .topic-group-title {
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .topic-group-box.liked .topic-group-title { color: var(--success); }
+        .topic-group-box.complained .topic-group-title { color: var(--danger); }
+
+        .topic-items-list {
+            list-style: disc inside;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .topic-items-list li {
+            font-size: 12px;
+            color: #334155;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        /* ================= BOTTOM 2-COLUMN SECTION (INSIGHTS & RECOMMENDATIONS) ================= */
+        .bottom-insights-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1.6fr;
+            gap: 18px;
+        }
+
+        .ai-insights-box {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .insights-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 12px;
+        }
+
+        .ai-insights-paragraph {
+            font-size: 14px;
+            line-height: 1.65;
+            color: #334155;
+        }
+
+        .recommendations-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            list-style: none;
+        }
+
+        .recommendation-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 13px;
+            color: #1e293b;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .rec-number-badge {
+            width: 22px;
+            height: 22px;
+            background: var(--primary-blue);
+            color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
             flex-shrink: 0;
         }
 
-
-        .count-icon.green {
-            background: #e9f8ef;
-            color: #16a34a;
+        /* Responsive Breakpoints */
+        @media (max-width: 1200px) {
+            .analytics-main-grid { grid-template-columns: 1fr; }
+            .metric-cards-grid { grid-template-columns: repeat(2, 1fr); }
+            .bottom-insights-grid { grid-template-columns: 1fr; }
         }
 
-
-        .count-icon.red {
-            background: #ffebeb;
-            color: #ef2b2b;
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-wrapper { margin-left: 0; padding: 20px; }
+            .search-action-card { flex-direction: column; align-items: stretch; }
+            .product-header-card { flex-direction: column; gap: 16px; align-items: flex-start; }
+            .metric-cards-grid { grid-template-columns: 1fr; }
         }
-
-
-        .count-icon.orange {
-            background: #fff4dd;
-            color: #f59e0b;
-        }
-
-
-        .count-number {
-            margin: 0;
-
-            font-size: 21px;
-
-            font-weight: bold;
-        }
-
-
-        .count-number.green {
-            color: #16a34a;
-        }
-
-
-        .count-number.red {
-            color: #ef2b2b;
-        }
-
-
-        .count-number.orange {
-            color: #f59e0b;
-        }
-
-
-        .count-label {
-            margin: 4px 0 0;
-
-            font-size: 12px;
-
-            color: #5f6b85;
-        }
-
-
-        /* =========================================================
-           INSIGHT BOXES
-        ========================================================= */
-
-        .insights-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(3, 1fr);
-
-            gap: 10px;
-
-            margin-top: 10px;
-        }
-
-
-        .insight-box {
-            padding: 13px;
-
-            border-radius: 7px;
-
-            min-height: 95px;
-
-            border: 1px solid;
-        }
-
-
-        .insight-box h4 {
-            margin: 0 0 8px;
-
-            font-size: 13px;
-        }
-
-
-        .insight-box p {
-            margin: 5px 0;
-
-            font-size: 12px;
-
-            line-height: 1.5;
-
-            color: #263453;
-        }
-
-
-        .insight-positive {
-            background: #effbf3;
-            border-color: #aee3bf;
-        }
-
-
-        .insight-positive h4 {
-            color: #159447;
-        }
-
-
-        .insight-negative {
-            background: #fff2f2;
-            border-color: #f3b2b2;
-        }
-
-
-        .insight-negative h4 {
-            color: #ef2b2b;
-        }
-
-
-        .insight-neutral {
-            background: #fff9eb;
-            border-color: #f5d18a;
-        }
-
-
-        .insight-neutral h4 {
-            color: #ed9200;
-        }
-
-
-        /* =========================================================
-           EMPTY STATE
-        ========================================================= */
-
-        .empty-message {
-            background: #f8f9fc;
-
-            border: 1px dashed #d4dce9;
-
-            border-radius: 8px;
-
-            padding: 18px;
-
-            text-align: center;
-
-            color: #6b7690;
-
-            font-size: 14px;
-        }
-
-
-        /* =========================================================
-           FOOTER
-        ========================================================= */
-
-        .footer {
-            border-top: 1px solid #dfe5ef;
-
-            margin-top: 18px;
-
-            padding: 18px 10px 22px;
-
-            text-align: center;
-
-            color: #64708b;
-
-            font-size: 14px;
-
-            line-height: 1.7;
-        }
-
-
-        .footer strong {
-            color: #4b5875;
-        }
-
-
-        /* =========================================================
-           RESPONSIVE
-        ========================================================= */
-
-        @media (max-width: 1100px) {
-
-            .stats-grid {
-                grid-template-columns:
-                    repeat(2, 1fr);
-            }
-
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-
-        }
-
-
-        @media (max-width: 700px) {
-
-            .top-header {
-                height: auto;
-
-                padding: 15px;
-
-                flex-direction: column;
-
-                gap: 15px;
-
-                align-items: flex-start;
-
-            }
-
-
-            .header-actions {
-                width: 100%;
-            }
-
-
-            .header-button {
-                flex: 1;
-
-                justify-content: center;
-            }
-
-
-            .main-container {
-                width: 94%;
-            }
-
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-
-            .form-row {
-                grid-template-columns: 1fr;
-
-                gap: 0;
-            }
-
-
-            .insight-count-grid,
-            .insights-grid {
-                grid-template-columns: 1fr;
-            }
-
-
-            .hero h2 {
-                font-size: 24px;
-            }
-
-
-            .hero p {
-                font-size: 14px;
-
-                line-height: 1.5;
-            }
-
-        }
-
-
-        @media (max-width: 450px) {
-
-            .brand-text h1 {
-                font-size: 17px;
-            }
-
-
-            .brand-text p {
-                font-size: 12px;
-            }
-
-
-            .header-actions {
-                flex-direction: column;
-            }
-
-
-            .stat-card {
-                padding: 18px;
-            }
-
-
-            .stat-icon {
-                width: 58px;
-                height: 58px;
-
-                font-size: 26px;
-            }
-
-        }
-
     </style>
-
 </head>
-
-
 <body>
 
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+        <div>
+            <div class="brand-header">
+                <div class="brand-icon">🤖</div>
+                <div class="brand-title">
+                    <h2>ReviewInsight AI</h2>
+                    <p>Your AI Review Agent</p>
+                </div>
+            </div>
 
-<!-- =========================================================
-     HEADER
-========================================================= -->
-
-<header class="top-header">
-
-    <div class="brand">
-
-        <div class="brand-logo">
-            AI
+            <ul class="nav-menu">
+                <li class="nav-item active">
+                    <a href="{{ url_for('home') }}">
+                        <span>🏠</span> Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('home') }}">
+                        <span>🔍</span> Analyze Product
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('reviews') }}">
+                        <span>📄</span> My Analyses / Raw
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('product_analytics') }}">
+                        <span>📊</span> Compare Products
+                    </a>
+                </li>
+            </ul>
         </div>
 
-        <div class="brand-text">
-
-            <h1>
-                Customer Review Intelligence
-            </h1>
-
-            <p>
-                AI-Powered Sentiment &amp; Aspect Analysis
-            </p>
-
+        <div class="sidebar-footer-card">
+            <span>📊</span>
+            <p>Turn customer voices into actionable insights</p>
         </div>
+    </aside>
 
-    </div>
+    <!-- ================= MAIN CONTENT WRAPPER ================= -->
+    <main class="main-wrapper">
 
-
-    <div class="header-actions">
-
-        <a
-            href="{{ url_for('reviews') }}"
-            class="header-button"
-        >
-
-            <span class="header-icon">
-                📄
-            </span>
-
-            Review History
-
-        </a>
-
-
-        <a
-            href="{{ url_for('product_analytics') }}"
-            class="header-button"
-        >
-
-            <span class="header-icon">
-                📊
-            </span>
-
-            Product Analytics
-
-        </a>
-
-    </div>
-
-</header>
-
-
-
-<!-- =========================================================
-     MAIN
-========================================================= -->
-
-<main class="main-container">
-
-
-    <!-- =====================================================
-         HERO
-    ====================================================== -->
-
-    <section class="hero">
-
-        <h2>
-            Understand What Your Customers Think
-        </h2>
-
-        <p>
-            Analyze customer reviews using Machine Learning and Natural Language Processing.
-        </p>
-
-    </section>
-
-
-
-    <!-- =====================================================
-         STATISTICS
-    ====================================================== -->
-
-    <section class="stats-grid">
-
-
-        <!-- TOTAL -->
-
-        <div class="stat-card">
-
-            <div class="stat-icon blue">
-                💬
+        <!-- Top Header Headline -->
+        <header class="top-header">
+            <div class="top-headline">
+                <h1>AI-Powered <span>Customer Review Intelligence Agent</span></h1>
+                <p>Let AI analyze thousands of customer reviews and give you meaningful insights.</p>
             </div>
-
-            <div class="stat-content">
-
-                <p class="stat-title">
-                    Total Reviews
-                </p>
-
-                <h3 class="stat-number blue">
-                    {{ total_reviews }}
-                </h3>
-
-                <p class="stat-subtitle">
-                    All time reviews
-                </p>
-
+            <div class="user-nav-actions">
+                <button class="how-it-works-btn">❓ How it works?</button>
+                <div class="user-profile">
+                    <div class="user-avatar">S</div>
+                    <span>Student</span>
+                </div>
             </div>
+        </header>
 
-        </div>
-
-
-        <!-- POSITIVE -->
-
-        <div class="stat-card">
-
-            <div class="stat-icon green">
-                👍
-            </div>
-
-            <div class="stat-content">
-
-                <p class="stat-title">
-                    Positive Reviews
-                </p>
-
-                <h3 class="stat-number green">
-                    {{ positive_percent }}%
-                </h3>
-
-                <p class="stat-subtitle">
-                    Positive customer feedback
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <!-- NEUTRAL -->
-
-        <div class="stat-card">
-
-            <div class="stat-icon orange">
-                😐
-            </div>
-
-            <div class="stat-content">
-
-                <p class="stat-title">
-                    Neutral Reviews
-                </p>
-
-                <h3 class="stat-number orange">
-                    {{ neutral_percent }}%
-                </h3>
-
-                <p class="stat-subtitle">
-                    Neutral customer feedback
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <!-- NEGATIVE -->
-
-        <div class="stat-card">
-
-            <div class="stat-icon red">
-                👎
-            </div>
-
-            <div class="stat-content">
-
-                <p class="stat-title">
-                    Negative Reviews
-                </p>
-
-                <h3 class="stat-number red">
-                    {{ negative_percent }}%
-                </h3>
-
-                <p class="stat-subtitle">
-                    Negative customer feedback
-                </p>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- =====================================================
-         CONTENT
-    ====================================================== -->
-
-    <section class="content-grid">
-
-
-        <!-- =================================================
-             LEFT COLUMN
-        ================================================== -->
-
-        <div class="left-column">
-
-
-            <!-- REVIEW FORM -->
-
-            <div class="panel">
-
-                <h2 class="panel-title">
-                    Analyze a Customer Review
-                </h2>
-
-                <p class="panel-description">
-                    Enter the review details below and let the AI model analyze it.
-                </p>
-
-
-                <form
-                    action="{{ url_for('add_customer_review') }}"
-                    method="POST"
+        <!-- Product Search & Analysis Action Form -->
+        <form class="search-action-card" method="POST" action="{{ url_for('home') }}">
+            <div class="search-input-box">
+                <span>🔍</span>
+                <input 
+                    type="text" 
+                    name="product" 
+                    placeholder="Enter product name (e.g. Samsung Galaxy S25, iPhone 16, or URL)..." 
+                    value="{{ product_query }}" 
+                    required
                 >
-
-
-                    <!-- PRODUCT + SOURCE -->
-
-                    <div class="form-row">
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Product Name
-                            </label>
-
-                            <input
-                                type="text"
-                                name="product_name"
-                                class="form-input"
-                                placeholder="Enter product name"
-                                required
-                            >
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Review Source
-                            </label>
-
-                            <input
-                                type="text"
-                                name="source"
-                                class="form-input"
-                                placeholder="Amazon, Flipkart, Website, etc."
-                                required
-                            >
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- REVIEW -->
-
-                    <div class="form-group">
-
-                        <label>
-                            Customer Review
-                        </label>
-
-                        <textarea
-                            name="review_text"
-                            class="form-textarea"
-                            placeholder="Enter customer review..."
-                            required
-                        ></textarea>
-
-                    </div>
-
-
-
-                    <!-- RATING -->
-
-                    <div class="form-group">
-
-                        <label>
-                            Customer Rating
-                        </label>
-
-                        <div class="rating-area">
-
-                            <span class="star active">
-                                ★
-                            </span>
-
-                            <span class="star active">
-                                ★
-                            </span>
-
-                            <span class="star active">
-                                ★
-                            </span>
-
-                            <span class="star active">
-                                ★
-                            </span>
-
-                            <span class="star">
-                                ★
-                            </span>
-
-                            <span class="rating-text">
-                                Select rating below
-                            </span>
-
-                        </div>
-
-
-                        <select
-                            name="rating"
-                            class="form-select"
-                            required
-                            style="margin-top: 8px;"
-                        >
-
-                            <option value="">
-                                Select Rating
-                            </option>
-
-                            <option value="1">
-                                1 Star
-                            </option>
-
-                            <option value="2">
-                                2 Stars
-                            </option>
-
-                            <option value="3">
-                                3 Stars
-                            </option>
-
-                            <option value="4">
-                                4 Stars
-                            </option>
-
-                            <option value="5">
-                                5 Stars
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-
-                    <!-- BUTTON -->
-
-                    <button
-                        type="submit"
-                        class="analyze-button"
-                    >
-
-                        ✨ &nbsp; Analyze Review with AI
-
-                    </button>
-
-                </form>
-
             </div>
+            <select class="source-select">
+                <option value="auto">🌐 Auto Detect Source</option>
+                <option value="amazon">Amazon Reviews</option>
+                <option value="flipkart">Flipkart Reviews</option>
+                <option value="reddit">Reddit Discussions</option>
+            </select>
+            <button type="submit" class="btn-analyze">
+                Analyze Product →
+            </button>
+        </form>
 
+        <!-- ================= PRODUCT HEADER CARD ================= -->
+        <div class="product-header-card">
+            <div class="product-identity">
+                <div class="product-image-box">📱</div>
+                <div class="product-details">
+                    <h2>
+                        {{ report.product_name }}
+                        <span class="badge-status">
+                            ✓ {{ report.status }}
+                        </span>
+                    </h2>
+                    <div class="product-meta-row">
+                        <span>Category: <strong>{{ report.category }}</strong></span>
+                        <span>|</span>
+                        <span>Source: <strong>{{ report.source_type }}</strong></span>
+                        <span>|</span>
+                        <span>Reviews Analyzed: <strong>{{ report.total_reviews }}</strong></span>
+                        <span>|</span>
+                        <span>Analysis Date: <strong>{{ report.analysis_date }}</strong></span>
+                    </div>
+                </div>
+            </div>
+            <div class="product-actions">
+                <a href="{{ url_for('reviews') }}" class="btn-outline">📄 View Raw Reviews</a>
+                <button class="btn-outline" onclick="window.print()">📥 Download Report</button>
+                <button class="btn-primary-sm" onclick="navigator.clipboard.writeText(window.location.href); alert('Report link copied!');">🔗 Share</button>
+            </div>
         </div>
 
-
-
-        <!-- =================================================
-             RIGHT COLUMN
-        ================================================== -->
-
-        <div class="right-column">
-
-
-            <!-- =================================================
-                 SENTIMENT ANALYSIS
-            ================================================== -->
-
-            <div class="panel">
-
-                <h2 class="panel-title">
-                    Sentiment Analysis
-                </h2>
-
-                <p class="panel-description">
-                    AI prediction generated from the customer review.
-                </p>
-
-
-                {% if prediction %}
-
-                    <div class="review-box">
-
-                        <span class="review-label">
-                            Customer Review
-                        </span>
-
-                        {{ analyzed_review }}
-
-                    </div>
-
-
-                    <div class="prediction-box">
-
-                        <span class="prediction-label">
-                            Predicted Sentiment
-                        </span>
-
-
-                        <div class="prediction-result">
-
-
-                            {% if prediction|lower == "positive" %}
-
-                                <div class="prediction-icon positive">
-                                    🙂
-                                </div>
-
-                            {% elif prediction|lower == "negative" %}
-
-                                <div class="prediction-icon negative">
-                                    🙁
-                                </div>
-
-                            {% else %}
-
-                                <div class="prediction-icon neutral">
-                                    😐
-                                </div>
-
-                            {% endif %}
-
-
-                            <div class="
-                                prediction-text
-                                {{ prediction|lower }}
-                            ">
-
-                                {{ prediction|capitalize }}
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- CONFIDENCE BAR -->
-
-                    {% if confidence_score is defined and confidence_score %}
-
-                        <div class="confidence-section">
-
-                            <div class="confidence-label">
-                                AI Confidence Level
-                            </div>
-
-                            <div class="confidence-bar-bg">
-                                <div
-                                    class="confidence-bar-fill {% if confidence_score >= 75 %}high{% elif confidence_score >= 50 %}medium{% else %}low{% endif %}"
-                                    style="width: {{ confidence_score }}%"
-                                ></div>
-                            </div>
-
-                            <div class="confidence-value">
-                                {{ confidence_score }}% confidence
-                            </div>
-
-                        </div>
-
+        <!-- ================= TOP 4 KEY METRIC CARDS ================= -->
+        <section class="metric-cards-grid">
+            
+            <!-- 1. Overall Perception -->
+            <div class="metric-card">
+                <div class="metric-card-label">Overall Customer Perception</div>
+                <div class="metric-value-row {{ report.perception_mood }}">
+                    {% if report.perception_mood == 'positive' %}
+                        <span>😊</span>
+                    {% elif report.perception_mood == 'negative' %}
+                        <span>🙁</span>
+                    {% else %}
+                        <span>😐</span>
                     {% endif %}
-
-
-                    <!-- AI EXPLANATION -->
-
-                    {% if ai_explanation is defined and ai_explanation %}
-
-                        <div class="ai-explanation">
-
-                            <div class="ai-explanation-label">
-                                🧠 AI Reasoning
-                            </div>
-
-                            <div class="ai-explanation-text">
-                                {{ ai_explanation }}
-                            </div>
-
-                            {% if ai_powered is defined and ai_powered %}
-                                <span class="ai-badge">
-                                    ✨ Powered by Gemini AI
-                                </span>
-                            {% else %}
-                                <span class="ai-badge" style="background: linear-gradient(135deg, #6b7280, #374151);">
-                                    🤖 ML Fallback Model
-                                </span>
-                            {% endif %}
-
-                        </div>
-
-                    {% endif %}
-
-
-                {% else %}
-
-                    <div class="empty-message">
-
-                        Machine Learning sentiment results
-                        will appear here after analysis.
-
-                    </div>
-
-                {% endif %}
-
+                    <span>{{ report.overall_perception }}</span>
+                </div>
+                <div class="metric-subtext">Based on {{ report.total_reviews }} customer reviews</div>
             </div>
 
+            <!-- 2. Customer Satisfaction -->
+            <div class="metric-card">
+                <div class="metric-card-label">Customer Satisfaction</div>
+                <div class="metric-value-row positive">
+                    {{ report.customer_satisfaction }}%
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: {{ report.customer_satisfaction }}%;"></div>
+                </div>
+                <div class="metric-subtext">Overall positive sentiment</div>
+            </div>
 
+            <!-- 3. Suspicious Reviews -->
+            <div class="metric-card">
+                <div class="metric-card-label">Suspicious Reviews</div>
+                <div class="metric-value-row negative">
+                    <span>🚩</span>
+                    <span>{{ report.suspicious_percentage }}%</span>
+                </div>
+                <div class="metric-subtext">Potentially suspicious ({{ report.suspicious_count }}/{{ report.total_reviews }})</div>
+            </div>
 
-            <!-- =================================================
-                 FAKE REVIEW DETECTION
-            ================================================== -->
+            <!-- 4. Key Takeaway -->
+            <div class="metric-card">
+                <div class="metric-card-label">💡 Key Takeaway</div>
+                <p class="key-takeaway-text">
+                    "{{ report.key_takeaway }}"
+                </p>
+            </div>
 
-            {% if prediction %}
+        </section>
 
-                <div class="panel fake-detection-panel">
+        <!-- ================= 3-COLUMN ANALYTICS GRID ================= -->
+        <section class="analytics-main-grid">
 
-                    <h2 class="panel-title">
-                        🔍 Fake Review Detection
-                    </h2>
+            <!-- Col 1: Sentiment Distribution -->
+            <div class="analytics-card">
+                <div class="card-header-title">Sentiment Distribution</div>
+                <div class="donut-container">
+                    <div class="donut-circle" style="background: conic-gradient(var(--success) 0% {{ report.positive_percentage }}%, #94a3b8 {{ report.positive_percentage }}% {{ report.positive_percentage + report.neutral_percentage }}%, var(--danger) {{ report.positive_percentage + report.neutral_percentage }}% 100%);">
+                        <div style="width: 90px; height: 90px; background: white; border-radius: 50%;"></div>
+                        <div class="donut-inner-text">
+                            <strong>{{ report.total_reviews }}</strong>
+                            <span>Reviews</span>
+                        </div>
+                    </div>
 
-                    <p class="panel-description">
-                        AI analysis of review authenticity and credibility.
-                    </p>
+                    <div class="donut-legend">
+                        <div class="legend-item">
+                            <span class="legend-dot pos"></span>
+                            <span>Positive &nbsp; {{ report.positive_percentage }}% ({{ report.positive_count }})</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot neu"></span>
+                            <span>Neutral &nbsp; {{ report.neutral_percentage }}% ({{ report.neutral_count }})</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot neg"></span>
+                            <span>Negative &nbsp; {{ report.negative_percentage }}% ({{ report.negative_count }})</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                    {% if is_fake is defined %}
-
-                        <div class="fake-result-box {% if is_fake %}suspicious{% else %}authentic{% endif %}">
-
-                            <div class="fake-result-header">
-
-                                {% if is_fake %}
-
-                                    <span class="fake-badge suspicious">
-                                        🚨 Potentially Fake
-                                    </span>
-
-                                {% else %}
-
-                                    <span class="fake-badge authentic">
-                                        ✅ Appears Authentic
-                                    </span>
-
-                                {% endif %}
-
+            <!-- Col 2: Aspect Analysis -->
+            <div class="analytics-card">
+                <div class="card-header-title">Aspect Analysis</div>
+                <div class="aspect-list">
+                    {% for aspect_name, aspect_info in report.aspects.items() %}
+                    <div class="aspect-bar-item">
+                        <span class="aspect-name-label">{{ aspect_name|capitalize }}</span>
+                        <div class="aspect-meter-bg">
+                            <div 
+                                class="aspect-meter-fill {% if aspect_info.score_percent >= 65 %}pos{% elif aspect_info.score_percent <= 45 %}neg{% else %}neu{% endif %}" 
+                                style="width: {{ aspect_info.score_percent }}%;">
                             </div>
-
-
-                            <!-- FAKE SCORE BAR -->
-
-                            {% if fake_score is defined %}
-
-                                <div class="fake-score-section">
-
-                                    <div class="fake-score-bar-bg">
-                                        <div
-                                            class="fake-score-bar-fill {% if fake_score < 30 %}safe{% elif fake_score < 60 %}warning{% else %}danger{% endif %}"
-                                            style="width: {{ fake_score }}%"
-                                        ></div>
-                                    </div>
-
-                                    <div class="fake-score-text">
-                                        Suspicion Score: {{ fake_score }}/100
-                                        {% if fake_score < 30 %}
-                                            — Low risk
-                                        {% elif fake_score < 60 %}
-                                            — Moderate risk
-                                        {% else %}
-                                            — High risk
-                                        {% endif %}
-                                    </div>
-
-                                </div>
-
-                            {% endif %}
-
-
-                            <!-- FAKE REASON -->
-
-                            {% if fake_reason is defined and fake_reason %}
-
-                                <div class="fake-reason">
-                                    <strong>AI Analysis:</strong>
-                                    {{ fake_reason }}
-                                </div>
-
-                            {% endif %}
-
                         </div>
+                        <span class="aspect-score-label">{{ aspect_info.score_percent }}%</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
 
-                    {% else %}
-
-                        <div class="empty-message">
-                            Fake detection is unavailable. Check your Gemini API key.
-                        </div>
-
-                    {% endif %}
-
+            <!-- Col 3: Common Topics (from AI) -->
+            <div class="analytics-card">
+                <div class="card-header-title">Common Topics (from AI)</div>
+                
+                <!-- Most Liked -->
+                <div class="topic-group-box liked">
+                    <div class="topic-group-title">
+                        <span>👍</span> Most Liked
+                    </div>
+                    <ul class="topic-items-list">
+                        {% for item in report.most_liked %}
+                        <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
                 </div>
 
-            {% endif %}
-
-
-
-            <!-- =================================================
-                 ASPECT ANALYSIS
-            ================================================== -->
-
-            <div class="panel">
-
-                <h2 class="panel-title">
-                    Aspect Analysis
-                </h2>
-
-                <p class="panel-description">
-                    Product features and customer concerns detected.
-                </p>
-
-
-                {% if aspects %}
-
-                    <div class="aspect-list">
-
-                        {% for aspect, sentiment in aspects.items() %}
-
-                            <div class="aspect-row">
-
-                                <span class="aspect-name">
-
-                                    {{ aspect|capitalize }}
-
-                                </span>
-
-
-                                <span class="
-                                    aspect-badge
-                                    {{ sentiment|lower }}
-                                ">
-
-                                    {{ sentiment }}
-
-                                </span>
-
-                            </div>
-
+                <!-- Most Complained -->
+                <div class="topic-group-box complained">
+                    <div class="topic-group-title">
+                        <span>👎</span> Most Complained
+                    </div>
+                    <ul class="topic-items-list">
+                        {% for item in report.most_complained %}
+                        <li>{{ item }}</li>
                         {% endfor %}
-
-                    </div>
-
-
-                {% else %}
-
-                    <div class="empty-message">
-
-                        Aspect analysis results will appear here
-                        after analyzing a review.
-
-                    </div>
-
-                {% endif %}
+                    </ul>
+                </div>
 
             </div>
 
+        </section>
 
-
-            <!-- =================================================
-                 CUSTOMER REVIEW INSIGHTS
-            ================================================== -->
-
-            <div class="panel">
-
-                <h2 class="panel-title">
-                    Customer Review Insights
-                </h2>
-
-                <p class="panel-description">
-                    A simple summary of what the AI discovered from the review.
+        <!-- ================= BOTTOM 2-COLUMN SECTION ================= -->
+        <section class="bottom-insights-grid">
+            
+            <!-- AI-Generated Insights -->
+            <div class="ai-insights-box">
+                <div class="insights-header">
+                    <span>✨</span>
+                    <span>AI-Generated Insights</span>
+                </div>
+                <p class="ai-insights-paragraph">
+                    {{ report.ai_insights }}
                 </p>
-
-
-                {% if aspects %}
-
-
-                    {% set positive_aspect_count =
-                        aspects.values()
-                        | select("equalto", "Positive")
-                        | list
-                        | length
-                    %}
-
-
-                    {% set negative_aspect_count =
-                        aspects.values()
-                        | select("equalto", "Negative")
-                        | list
-                        | length
-                    %}
-
-
-                    {% set neutral_aspect_count =
-                        aspects.values()
-                        | select("equalto", "Neutral")
-                        | list
-                        | length
-                    %}
-
-
-
-                    <!-- COUNT CARDS -->
-
-                    <div class="insight-count-grid">
-
-
-                        <!-- POSITIVE COUNT -->
-
-                        <div class="count-card">
-
-                            <div class="count-icon green">
-                                🙂
-                            </div>
-
-                            <div>
-
-                                <h3 class="count-number green">
-                                    {{ positive_aspect_count }}
-                                </h3>
-
-                                <p class="count-label">
-                                    Positive Aspects
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- NEGATIVE COUNT -->
-
-                        <div class="count-card">
-
-                            <div class="count-icon red">
-                                🙁
-                            </div>
-
-                            <div>
-
-                                <h3 class="count-number red">
-                                    {{ negative_aspect_count }}
-                                </h3>
-
-                                <p class="count-label">
-                                    Negative Aspects
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- NEUTRAL COUNT -->
-
-                        <div class="count-card">
-
-                            <div class="count-icon orange">
-                                😐
-                            </div>
-
-                            <div>
-
-                                <h3 class="count-number orange">
-                                    {{ neutral_aspect_count }}
-                                </h3>
-
-                                <p class="count-label">
-                                    Neutral Aspects
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- INSIGHT BOXES -->
-
-                    <div class="insights-grid">
-
-
-                        <!-- POSITIVE -->
-
-                        {% if positive_aspect_count > 0 %}
-
-                            <div class="insight-box insight-positive">
-
-                                <h4>
-                                    👍 &nbsp; What Customers Like
-                                </h4>
-
-
-                                {% for aspect, sentiment in aspects.items() %}
-
-                                    {% if sentiment == "Positive" %}
-
-                                        <p>
-                                            • Customers are positive about
-                                            <strong>
-                                                {{ aspect|capitalize }}
-                                            </strong>.
-                                        </p>
-
-                                    {% endif %}
-
-                                {% endfor %}
-
-                            </div>
-
-                        {% else %}
-
-                            <div class="insight-box insight-positive">
-
-                                <h4>
-                                    👍 &nbsp; What Customers Like
-                                </h4>
-
-                                <p>
-                                    No positive aspects detected.
-                                </p>
-
-                            </div>
-
-                        {% endif %}
-
-
-
-                        <!-- NEGATIVE -->
-
-                        {% if negative_aspect_count > 0 %}
-
-                            <div class="insight-box insight-negative">
-
-                                <h4>
-                                    👎 &nbsp; Customer Concerns
-                                </h4>
-
-
-                                {% for aspect, sentiment in aspects.items() %}
-
-                                    {% if sentiment == "Negative" %}
-
-                                        <p>
-                                            • Customers have concerns about
-                                            <strong>
-                                                {{ aspect|capitalize }}
-                                            </strong>.
-                                        </p>
-
-                                    {% endif %}
-
-                                {% endfor %}
-
-                            </div>
-
-                        {% else %}
-
-                            <div class="insight-box insight-negative">
-
-                                <h4>
-                                    👎 &nbsp; Customer Concerns
-                                </h4>
-
-                                <p>
-                                    No negative aspects detected.
-                                </p>
-
-                            </div>
-
-                        {% endif %}
-
-
-
-                        <!-- NEUTRAL -->
-
-                        {% if neutral_aspect_count > 0 %}
-
-                            <div class="insight-box insight-neutral">
-
-                                <h4>
-                                    😐 &nbsp; Neutral Aspects
-                                </h4>
-
-
-                                {% for aspect, sentiment in aspects.items() %}
-
-                                    {% if sentiment == "Neutral" %}
-
-                                        <p>
-                                            •
-                                            <strong>
-                                                {{ aspect|capitalize }}
-                                            </strong>
-                                            was mentioned without a clear
-                                            positive or negative opinion.
-                                        </p>
-
-                                    {% endif %}
-
-                                {% endfor %}
-
-                            </div>
-
-                        {% else %}
-
-                            <div class="insight-box insight-neutral">
-
-                                <h4>
-                                    😐 &nbsp; Neutral Aspects
-                                </h4>
-
-                                <p>
-                                    No neutral aspects detected.
-                                </p>
-
-                            </div>
-
-                        {% endif %}
-
-                    </div>
-
-
-                {% else %}
-
-                    <div class="empty-message">
-
-                        Customer review insights will appear
-                        after analyzing a review.
-
-                    </div>
-
-                {% endif %}
-
             </div>
 
-        </div>
+            <!-- Recommendations -->
+            <div class="ai-insights-box">
+                <div class="insights-header">
+                    <span>🎯</span>
+                    <span>Recommendations</span>
+                </div>
+                <ul class="recommendations-list">
+                    {% for rec in report.recommendations %}
+                    <li class="recommendation-item">
+                        <span class="rec-number-badge">{{ loop.index }}</span>
+                        <span>{{ rec }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
 
-    </section>
+        </section>
 
-
-
-    <!-- =====================================================
-         FOOTER
-    ====================================================== -->
-
-    <footer class="footer">
-
-        <strong>
-            AI-Powered Customer Review Intelligence Platform
-        </strong>
-
-        <br>
-
-        Gemini AI · Machine Learning · NLP · Sentiment Analysis · Fake Review Detection
-
-    </footer>
-
-
-</main>
-
+    </main>
 
 </body>
-
 </html>

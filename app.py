@@ -1,776 +1,165 @@
+"""
+Flask Web Application for AI-Powered Customer Review Intelligence Agent.
+Delegates heavy processing to the ReviewIntelligenceAgent and DatabaseManager.
+"""
+
+import logging
 from flask import Flask, render_template, request, redirect, url_for, jsonify
-import sqlite3
-import joblib
 
-from database import create_database, add_review
-from preprocessing.text_preprocessor import clean_text
-from utils.aspect_analyzer import analyze_aspects
-from utils.gemini_service import (
-    analyze_review_with_ai,
-    detect_fake_review,
-    generate_review_summary
-)
+import config
+from database.db_manager import DatabaseManager
+from agent.orchestrator import ReviewIntelligenceAgent
 
+# Configure logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+logger = logging.getLogger(__name__)
 
-# ============================================================
-# FLASK APPLICATION
-# ============================================================
-
+# Initialize Flask app
 app = Flask(__name__)
+app.secret_key = config.SECRET_KEY
+
+# Initialize Agent & Database
+db_manager = DatabaseManager()
+agent = ReviewIntelligenceAgent()
 
 
 # ============================================================
-# CREATE DATABASE
+# MAIN DASHBOARD / PRODUCT INTELLIGENCE ROUTE
 # ============================================================
 
-create_database()
-
-
-# ============================================================
-# LOAD MACHINE LEARNING MODEL (FALLBACK)
-# ============================================================
-
-model = joblib.load(
-    "models/sentiment_model.pkl"
-)
-
-vectorizer = joblib.load(
-    "models/tfidf_vectorizer.pkl"
-)
-
-
-# ============================================================
-# DATABASE CONNECTION
-# ============================================================
-
-def get_connection():
-
-    connection = sqlite3.connect(
-        "customer_reviews.db"
-    )
-
-    connection.row_factory = sqlite3.Row
-
-    return connection
-
-
-# ============================================================
-# PREDICT SENTIMENT (SKLEARN FALLBACK)
-# ============================================================
-
-def predict_sentiment(review_text):
-
-    if not review_text:
-
-        return "neutral"
-
-    # Clean review text
-    cleaned = clean_text(
-        review_text
-    )
-
-    # Convert text into TF-IDF vector
-    vector = vectorizer.transform(
-        [cleaned]
-    )
-
-    # Predict sentiment
-    prediction = model.predict(
-        vector
-    )[0]
-
-    # Convert result to lowercase
-    prediction = str(
-        prediction
-    ).strip().lower()
-
-    return prediction
-
-
-# ============================================================
-# DASHBOARD STATISTICS (USES STORED SENTIMENT)
-# ============================================================
-
-def get_dashboard_stats():
-
-    connection = get_connection()
-
-    rows = connection.execute("""
-        SELECT sentiment
-        FROM reviews
-        WHERE sentiment IS NOT NULL
-    """).fetchall()
-
-    connection.close()
-
-    total = len(rows)
-
-    positive = 0
-    neutral = 0
-    negative = 0
-
-
-    # --------------------------------------------------------
-    # COUNT STORED SENTIMENTS
-    # --------------------------------------------------------
-
-    for row in rows:
-
-        sentiment = str(row["sentiment"]).strip().lower()
-
-        if sentiment == "positive":
-
-            positive += 1
-
-        elif sentiment == "neutral":
-
-            neutral += 1
-
-        elif sentiment == "negative":
-
-            negative += 1
-
-
-    # --------------------------------------------------------
-    # CALCULATE PERCENTAGES
-    # --------------------------------------------------------
-
-    if total > 0:
-
-        positive_percent = round(
-            (positive / total) * 100,
-            1
-        )
-
-        neutral_percent = round(
-            (neutral / total) * 100,
-            1
-        )
-
-        negative_percent = round(
-            (negative / total) * 100,
-            1
-        )
-
-    else:
-
-        positive_percent = 0
-        neutral_percent = 0
-        negative_percent = 0
-
-
-    return (
-        total,
-        positive_percent,
-        neutral_percent,
-        negative_percent
-    )
-
-
-# ============================================================
-# SENTIMENT ANALYTICS COUNTS
-# ============================================================
-
-def get_sentiment_counts():
-
-    connection = get_connection()
-
-    rows = connection.execute("""
-        SELECT sentiment
-        FROM reviews
-        WHERE sentiment IS NOT NULL
-    """).fetchall()
-
-    connection.close()
-
-    positive = 0
-    neutral = 0
-    negative = 0
-
-
-    # --------------------------------------------------------
-    # COUNT SENTIMENTS
-    # --------------------------------------------------------
-
-    for row in rows:
-
-        sentiment = str(row["sentiment"]).strip().lower()
-
-        if sentiment == "positive":
-
-            positive += 1
-
-        elif sentiment == "neutral":
-
-            neutral += 1
-
-        elif sentiment == "negative":
-
-            negative += 1
-
-
-    return (
-        positive,
-        neutral,
-        negative
-    )
-
-
-# ============================================================
-# PRODUCT-WISE ANALYTICS
-# ============================================================
-
-def get_product_analytics():
-
-    connection = get_connection()
-
-    rows = connection.execute("""
-        SELECT
-            product_name,
-            sentiment
-        FROM reviews
-        WHERE product_name IS NOT NULL
-        AND TRIM(product_name) != ''
-        AND sentiment IS NOT NULL
-    """).fetchall()
-
-    connection.close()
-
-    product_data = {}
-
-
-    # ========================================================
-    # PROCESS EACH REVIEW
-    # ========================================================
-
-    for row in rows:
-
-        # Clean product name
-        product = row["product_name"]
-
-        if product:
-
-            product = product.strip()
-
-        else:
-
-            continue
-
-
-        # Get sentiment
-        sentiment = str(row["sentiment"]).strip().lower()
-
-
-        # ----------------------------------------------------
-        # CREATE PRODUCT ENTRY
-        # ----------------------------------------------------
-
-        if product not in product_data:
-
-            product_data[product] = {
-
-                "total": 0,
-
-                "positive": 0,
-
-                "neutral": 0,
-
-                "negative": 0,
-
-                "positive_percent": 0,
-
-                "neutral_percent": 0,
-
-                "negative_percent": 0
-
-            }
-
-
-        # ----------------------------------------------------
-        # INCREASE TOTAL
-        # ----------------------------------------------------
-
-        product_data[product]["total"] += 1
-
-
-        # ----------------------------------------------------
-        # INCREASE SENTIMENT COUNT
-        # ----------------------------------------------------
-
-        if sentiment == "positive":
-
-            product_data[product]["positive"] += 1
-
-        elif sentiment == "neutral":
-
-            product_data[product]["neutral"] += 1
-
-        elif sentiment == "negative":
-
-            product_data[product]["negative"] += 1
-
-
-    # ========================================================
-    # CALCULATE PRODUCT PERCENTAGES
-    # ========================================================
-
-    for product, data in product_data.items():
-
-        total = data["total"]
-
-
-        if total > 0:
-
-            data["positive_percent"] = round(
-                (data["positive"] / total) * 100,
-                1
-            )
-
-            data["neutral_percent"] = round(
-                (data["neutral"] / total) * 100,
-                1
-            )
-
-            data["negative_percent"] = round(
-                (data["negative"] / total) * 100,
-                1
-            )
-
-
-    return product_data
-
-
-# ============================================================
-# HOME PAGE / DASHBOARD
-# ============================================================
-
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def home():
+    """
+    Main entry point for the ReviewInsight AI Dashboard.
+    Accepts search queries for product analysis, executes agent workflow,
+    and displays comprehensive product intelligence report.
+    """
+    product_query = request.args.get("product") or request.form.get("product")
+    
+    # Default initial product demonstration if none provided
+    if not product_query:
+        product_query = "Samsung Galaxy S25"
 
-    # --------------------------------------------------------
-    # GET DASHBOARD STATISTICS
-    # --------------------------------------------------------
+    product_query = product_query.strip()
 
-    stats = get_dashboard_stats()
-
-
-    # --------------------------------------------------------
-    # GET SENTIMENT COUNTS
-    # --------------------------------------------------------
-
-    sentiment_counts = get_sentiment_counts()
-
-
-    # --------------------------------------------------------
-    # GET PRODUCT ANALYTICS
-    # --------------------------------------------------------
-
-    product_analytics = get_product_analytics()
-
-
-    # --------------------------------------------------------
-    # DISPLAY DASHBOARD
-    # --------------------------------------------------------
+    # Execute Agent Analysis Workflow
+    report = agent.analyze_product(product_query)
+    
+    # Save generated report to history
+    db_manager.save_product_report(report)
 
     return render_template(
-
         "index.html",
-
-        # Dashboard statistics
-        total_reviews=stats[0],
-
-        positive_percent=stats[1],
-
-        neutral_percent=stats[2],
-
-        negative_percent=stats[3],
-
-        # Sentiment counts
-        positive_count=sentiment_counts[0],
-
-        neutral_count=sentiment_counts[1],
-
-        negative_count=sentiment_counts[2],
-
-        # Product analytics
-        product_analytics=product_analytics
-
+        report=report,
+        product_query=product_query
     )
 
 
 # ============================================================
-# ADD AND ANALYZE CUSTOMER REVIEW
+# API ENDPOINT FOR PRODUCT ANALYSIS (AJAX / JSON)
 # ============================================================
 
-@app.route(
-    "/add-review",
-    methods=["POST"]
-)
-def add_customer_review():
-
-    # ========================================================
-    # GET FORM DATA
-    # ========================================================
-
-    product_name = request.form.get(
-        "product_name",
-        ""
-    ).strip()
-
-
-    review_text = request.form.get(
-        "review_text",
-        ""
-    ).strip()
-
-
-    rating = request.form.get(
-        "rating",
-        ""
-    ).strip()
-
-
-    source = request.form.get(
-        "source",
-        ""
-    ).strip()
-
-
-    # ========================================================
-    # CHECK REVIEW TEXT
-    # ========================================================
-
-    if not review_text:
-
-        return redirect(
-            url_for("home")
-        )
-
-
-    # ========================================================
-    # CHECK PRODUCT NAME
-    # ========================================================
+@app.route("/api/analyze", methods=["POST"])
+def api_analyze_product():
+    """
+    JSON API endpoint for programmatic or asynchronous agent analysis.
+    Accepts: { "product": "Product Name", "max_reviews": 50 }
+    """
+    data = request.get_json() or {}
+    product_name = data.get("product", "").strip()
+    max_reviews = int(data.get("max_reviews", 50))
 
     if not product_name:
+        return jsonify({"status": "error", "message": "Product name is required."}), 400
 
-        product_name = "Unknown Product"
+    report = agent.analyze_product(product_name, max_reviews=max_reviews)
+    db_manager.save_product_report(report)
 
-
-    # ========================================================
-    # CHECK SOURCE
-    # ========================================================
-
-    if not source:
-
-        source = "Unknown"
-
-
-    # ========================================================
-    # CONVERT AND VALIDATE RATING
-    # ========================================================
-
-    if rating:
-
-        try:
-
-            rating = int(
-                rating
-            )
-
-
-            # Rating must be between 1 and 5
-
-            if rating < 1 or rating > 5:
-
-                rating = None
-
-
-        except ValueError:
-
-            rating = None
-
-    else:
-
-        rating = None
-
-
-    # ========================================================
-    # AI SENTIMENT ANALYSIS (GEMINI)
-    # ========================================================
-
-    ai_result = analyze_review_with_ai(
-        review_text
-    )
-
-    if ai_result:
-
-        prediction = ai_result["sentiment"]
-        confidence_score = ai_result.get("confidence", 0)
-        ai_explanation = ai_result.get("explanation", "")
-
-    else:
-
-        # Fallback to sklearn model
-        prediction = predict_sentiment(
-            review_text
-        )
-        confidence_score = 0
-        ai_explanation = "Analyzed using ML model (Gemini unavailable)"
-
-
-    # ========================================================
-    # AI FAKE REVIEW DETECTION (GEMINI)
-    # ========================================================
-
-    fake_result = detect_fake_review(
-        review_text
-    )
-
-    if fake_result:
-
-        is_fake = fake_result.get("is_fake", False)
-        fake_score = fake_result.get("fake_score", 0)
-        fake_reason = fake_result.get("reasoning", "")
-
-    else:
-
-        is_fake = False
-        fake_score = 0
-        fake_reason = "Fake detection unavailable (Gemini not connected)"
-
-
-    # ========================================================
-    # ASPECT ANALYSIS
-    # ========================================================
-
-    aspects = analyze_aspects(
-        review_text
-    )
-
-
-    # ========================================================
-    # SAVE REVIEW TO DATABASE
-    # ========================================================
-
-    add_review(
-
-        product_name,
-
-        review_text,
-
-        rating,
-
-        source,
-
-        prediction,
-
-        is_fake,
-
-        fake_score,
-
-        fake_reason,
-
-        ai_explanation,
-
-        confidence_score
-
-    )
-
-
-    # ========================================================
-    # UPDATE DASHBOARD
-    # ========================================================
-
-    stats = get_dashboard_stats()
-
-
-    sentiment_counts = get_sentiment_counts()
-
-
-    product_analytics = get_product_analytics()
-
-
-    # ========================================================
-    # DISPLAY RESULTS
-    # ========================================================
-
-    return render_template(
-
-        "index.html",
-
-        # ----------------------------------------------------
-        # Dashboard
-        # ----------------------------------------------------
-
-        total_reviews=stats[0],
-
-        positive_percent=stats[1],
-
-        neutral_percent=stats[2],
-
-        negative_percent=stats[3],
-
-
-        # ----------------------------------------------------
-        # Sentiment counts
-        # ----------------------------------------------------
-
-        positive_count=sentiment_counts[0],
-
-        neutral_count=sentiment_counts[1],
-
-        negative_count=sentiment_counts[2],
-
-
-        # ----------------------------------------------------
-        # Current review analysis
-        # ----------------------------------------------------
-
-        prediction=prediction,
-
-        analyzed_review=review_text,
-
-        aspects=aspects,
-
-
-        # ----------------------------------------------------
-        # AI Analysis Results
-        # ----------------------------------------------------
-
-        confidence_score=confidence_score,
-
-        ai_explanation=ai_explanation,
-
-        is_fake=is_fake,
-
-        fake_score=fake_score,
-
-        fake_reason=fake_reason,
-
-        ai_powered=(ai_result is not None),
-
-
-        # ----------------------------------------------------
-        # Product analytics
-        # ----------------------------------------------------
-
-        product_analytics=product_analytics
-
-    )
+    return jsonify({"status": "success", "report": report})
 
 
 # ============================================================
-# REVIEW HISTORY
+# INDIVIDUAL REVIEW SUBMISSION (FOR TESTING / MANUAL INPUT)
+# ============================================================
+
+@app.route("/add-review", methods=["POST"])
+def add_customer_review():
+    """
+    Handles single review submissions from the manual review form.
+    Analyzes review with tools and stores it in the database.
+    """
+    product_name = request.form.get("product_name", "Unknown Product").strip()
+    review_text = request.form.get("review_text", "").strip()
+    rating = request.form.get("rating", "5")
+    source = request.form.get("source", "Manual Input").strip()
+
+    if not review_text:
+        return redirect(url_for("home", product=product_name))
+
+    try:
+        rating_int = int(rating)
+    except ValueError:
+        rating_int = 5
+
+    # Run sentiment & authenticity evaluation using agent tools
+    sentiment_res = agent.sentiment_analyzer.analyze_sentiment(review_text)
+    fake_res = agent.fake_detector.evaluate_review(review_text, rating_int)
+
+    # Save to SQLite
+    db_manager.add_review(
+        product_name=product_name,
+        review_text=review_text,
+        rating=rating_int,
+        source=source,
+        sentiment=sentiment_res.get("sentiment", "neutral"),
+        is_fake=fake_res.get("is_suspicious", False),
+        fake_score=fake_res.get("suspicion_score", 0),
+        fake_reason=fake_res.get("reasoning", ""),
+        ai_explanation=sentiment_res.get("explanation", ""),
+        confidence_score=sentiment_res.get("confidence", 75)
+    )
+
+    # Re-run agent intelligence report for this product
+    return redirect(url_for("home", product=product_name))
+
+
+# ============================================================
+# REVIEW HISTORY ROUTE
 # ============================================================
 
 @app.route("/reviews")
 def reviews():
-
-    connection = get_connection()
-
-
-    reviews = connection.execute("""
-        SELECT *
-        FROM reviews
-        ORDER BY created_at DESC
-    """).fetchall()
-
-
-    connection.close()
-
-
-    return render_template(
-
-        "reviews.html",
-
-        reviews=reviews
-
-    )
+    """Displays raw customer reviews stored in the database."""
+    all_reviews = db_manager.get_all_reviews()
+    return render_template("reviews.html", reviews=all_reviews)
 
 
 # ============================================================
-# PRODUCT ANALYTICS PAGE
+# PRODUCT ANALYTICS COMPARISON ROUTE
 # ============================================================
 
 @app.route("/product-analytics")
 def product_analytics():
-
-    # --------------------------------------------------------
-    # GET PRODUCT ANALYTICS
-    # --------------------------------------------------------
-
-    product_data = get_product_analytics()
-
-
-    # --------------------------------------------------------
-    # DISPLAY PRODUCT ANALYTICS PAGE
-    # --------------------------------------------------------
-
-    return render_template(
-
-        "product_analytics.html",
-
-        product_analytics=product_data
-
-    )
+    """Displays aggregated sentiment comparisons across all products."""
+    analytics_summary = db_manager.get_product_analytics_summary()
+    return render_template("product_analytics.html", product_analytics=analytics_summary)
 
 
 # ============================================================
-# AI SUMMARY API ENDPOINT
+# AI SUMMARY ROUTE (COMPATIBILITY)
 # ============================================================
 
 @app.route("/ai-summary")
 def ai_summary():
-    """
-    Generate an AI-powered summary for a product's reviews.
-    Query parameter: ?product=ProductName
-    """
-
-    product_name = request.args.get(
-        "product", ""
-    ).strip()
-
-    connection = get_connection()
-
-    if product_name:
-
-        rows = connection.execute("""
-            SELECT review_text
-            FROM reviews
-            WHERE product_name = ?
-            AND review_text IS NOT NULL
-        """, (product_name,)).fetchall()
-
-    else:
-
-        rows = connection.execute("""
-            SELECT review_text
-            FROM reviews
-            WHERE review_text IS NOT NULL
-        """).fetchall()
-
-    connection.close()
-
-    reviews_list = [
-        row["review_text"] for row in rows
-    ]
-
-    if not reviews_list:
-        return jsonify({
-            "error": "No reviews found"
-        })
-
-    summary = generate_review_summary(
-        reviews_list
-    )
-
-    if summary:
-        return jsonify(summary)
-
-    else:
-        return jsonify({
-            "error": "AI summary unavailable. Check your Gemini API key."
-        })
+    """Generates an executive summary for a product."""
+    product = request.args.get("product", "Samsung Galaxy S25")
+    report = agent.analyze_product(product)
+    return jsonify({
+        "product": product,
+        "summary": report.get("ai_insights", ""),
+        "key_takeaway": report.get("key_takeaway", ""),
+        "recommendations": report.get("recommendations", [])
+    })
 
 
 # ============================================================
@@ -778,7 +167,7 @@ def ai_summary():
 # ============================================================
 
 if __name__ == "__main__":
-
     app.run(
-        debug=True
+        debug=config.FLASK_DEBUG,
+        port=config.FLASK_PORT
     )
