@@ -630,6 +630,192 @@
 
 
         /* =========================================================
+           CONFIDENCE BAR
+        ========================================================= */
+
+        .confidence-section {
+            margin-top: 12px;
+            padding: 12px;
+            background: #f7f9ff;
+            border: 1px solid #dce5f8;
+            border-radius: 8px;
+        }
+
+        .confidence-label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #1557d6;
+            margin-bottom: 8px;
+        }
+
+        .confidence-bar-bg {
+            width: 100%;
+            height: 12px;
+            background: #e8ecf4;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .confidence-bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+
+        .confidence-bar-fill.high {
+            background: linear-gradient(90deg, #16a34a, #22c55e);
+        }
+
+        .confidence-bar-fill.medium {
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+        }
+
+        .confidence-bar-fill.low {
+            background: linear-gradient(90deg, #ef4444, #f87171);
+        }
+
+        .confidence-value {
+            font-size: 13px;
+            color: #4b5875;
+            margin-top: 5px;
+        }
+
+
+        /* =========================================================
+           AI EXPLANATION
+        ========================================================= */
+
+        .ai-explanation {
+            margin-top: 12px;
+            padding: 12px;
+            background: #f0f4ff;
+            border: 1px solid #c7d7f7;
+            border-radius: 8px;
+        }
+
+        .ai-explanation-label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #1557d6;
+            margin-bottom: 6px;
+        }
+
+        .ai-explanation-text {
+            font-size: 14px;
+            color: #263453;
+            line-height: 1.6;
+        }
+
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+
+        /* =========================================================
+           FAKE REVIEW DETECTION
+        ========================================================= */
+
+        .fake-detection-panel {
+            margin-top: 10px;
+        }
+
+        .fake-result-box {
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid;
+        }
+
+        .fake-result-box.authentic {
+            background: #effbf3;
+            border-color: #aee3bf;
+        }
+
+        .fake-result-box.suspicious {
+            background: #fff2f2;
+            border-color: #f3b2b2;
+        }
+
+        .fake-result-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .fake-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .fake-badge.authentic {
+            background: #dcf5e5;
+            color: #15803d;
+        }
+
+        .fake-badge.suspicious {
+            background: #ffe0e0;
+            color: #dc2626;
+        }
+
+        .fake-score-section {
+            margin: 10px 0;
+        }
+
+        .fake-score-bar-bg {
+            width: 100%;
+            height: 10px;
+            background: #e8ecf4;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .fake-score-bar-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        .fake-score-bar-fill.safe {
+            background: linear-gradient(90deg, #16a34a, #22c55e);
+        }
+
+        .fake-score-bar-fill.warning {
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+        }
+
+        .fake-score-bar-fill.danger {
+            background: linear-gradient(90deg, #ef4444, #f87171);
+        }
+
+        .fake-score-text {
+            font-size: 12px;
+            color: #5f6b85;
+            margin-top: 4px;
+        }
+
+        .fake-reason {
+            font-size: 13px;
+            color: #263453;
+            line-height: 1.6;
+            margin-top: 8px;
+        }
+
+
+        /* =========================================================
            ASPECT ANALYSIS
         ========================================================= */
 
@@ -1429,7 +1615,7 @@
                         class="analyze-button"
                     >
 
-                        ✨ &nbsp; Analyze Review
+                        ✨ &nbsp; Analyze Review with AI
 
                     </button>
 
@@ -1521,6 +1707,61 @@
                     </div>
 
 
+                    <!-- CONFIDENCE BAR -->
+
+                    {% if confidence_score is defined and confidence_score %}
+
+                        <div class="confidence-section">
+
+                            <div class="confidence-label">
+                                AI Confidence Level
+                            </div>
+
+                            <div class="confidence-bar-bg">
+                                <div
+                                    class="confidence-bar-fill {% if confidence_score >= 75 %}high{% elif confidence_score >= 50 %}medium{% else %}low{% endif %}"
+                                    style="width: {{ confidence_score }}%"
+                                ></div>
+                            </div>
+
+                            <div class="confidence-value">
+                                {{ confidence_score }}% confidence
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- AI EXPLANATION -->
+
+                    {% if ai_explanation is defined and ai_explanation %}
+
+                        <div class="ai-explanation">
+
+                            <div class="ai-explanation-label">
+                                🧠 AI Reasoning
+                            </div>
+
+                            <div class="ai-explanation-text">
+                                {{ ai_explanation }}
+                            </div>
+
+                            {% if ai_powered is defined and ai_powered %}
+                                <span class="ai-badge">
+                                    ✨ Powered by Gemini AI
+                                </span>
+                            {% else %}
+                                <span class="ai-badge" style="background: linear-gradient(135deg, #6b7280, #374151);">
+                                    🤖 ML Fallback Model
+                                </span>
+                            {% endif %}
+
+                        </div>
+
+                    {% endif %}
+
+
                 {% else %}
 
                     <div class="empty-message">
@@ -1533,6 +1774,101 @@
                 {% endif %}
 
             </div>
+
+
+
+            <!-- =================================================
+                 FAKE REVIEW DETECTION
+            ================================================== -->
+
+            {% if prediction %}
+
+                <div class="panel fake-detection-panel">
+
+                    <h2 class="panel-title">
+                        🔍 Fake Review Detection
+                    </h2>
+
+                    <p class="panel-description">
+                        AI analysis of review authenticity and credibility.
+                    </p>
+
+                    {% if is_fake is defined %}
+
+                        <div class="fake-result-box {% if is_fake %}suspicious{% else %}authentic{% endif %}">
+
+                            <div class="fake-result-header">
+
+                                {% if is_fake %}
+
+                                    <span class="fake-badge suspicious">
+                                        🚨 Potentially Fake
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="fake-badge authentic">
+                                        ✅ Appears Authentic
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- FAKE SCORE BAR -->
+
+                            {% if fake_score is defined %}
+
+                                <div class="fake-score-section">
+
+                                    <div class="fake-score-bar-bg">
+                                        <div
+                                            class="fake-score-bar-fill {% if fake_score < 30 %}safe{% elif fake_score < 60 %}warning{% else %}danger{% endif %}"
+                                            style="width: {{ fake_score }}%"
+                                        ></div>
+                                    </div>
+
+                                    <div class="fake-score-text">
+                                        Suspicion Score: {{ fake_score }}/100
+                                        {% if fake_score < 30 %}
+                                            — Low risk
+                                        {% elif fake_score < 60 %}
+                                            — Moderate risk
+                                        {% else %}
+                                            — High risk
+                                        {% endif %}
+                                    </div>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <!-- FAKE REASON -->
+
+                            {% if fake_reason is defined and fake_reason %}
+
+                                <div class="fake-reason">
+                                    <strong>AI Analysis:</strong>
+                                    {{ fake_reason }}
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="empty-message">
+                            Fake detection is unavailable. Check your Gemini API key.
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            {% endif %}
 
 
 
@@ -1894,7 +2230,7 @@
 
         <br>
 
-        Machine Learning · NLP · Sentiment Analysis
+        Gemini AI · Machine Learning · NLP · Sentiment Analysis · Fake Review Detection
 
     </footer>
 

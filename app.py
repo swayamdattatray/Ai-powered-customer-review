@@ -1,10 +1,15 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import sqlite3
 import joblib
 
 from database import create_database, add_review
 from preprocessing.text_preprocessor import clean_text
 from utils.aspect_analyzer import analyze_aspects
+from utils.gemini_service import (
+    analyze_review_with_ai,
+    detect_fake_review,
+    generate_review_summary
+)
 
 
 # ============================================================
@@ -22,7 +27,7 @@ create_database()
 
 
 # ============================================================
-# LOAD MACHINE LEARNING MODEL
+# LOAD MACHINE LEARNING MODEL (FALLBACK)
 # ============================================================
 
 model = joblib.load(
@@ -50,7 +55,7 @@ def get_connection():
 
 
 # ============================================================
-# PREDICT SENTIMENT
+# PREDICT SENTIMENT (SKLEARN FALLBACK)
 # ============================================================
 
 def predict_sentiment(review_text):
@@ -83,7 +88,7 @@ def predict_sentiment(review_text):
 
 
 # ============================================================
-# DASHBOARD STATISTICS
+# DASHBOARD STATISTICS (USES STORED SENTIMENT)
 # ============================================================
 
 def get_dashboard_stats():
@@ -91,13 +96,14 @@ def get_dashboard_stats():
     connection = get_connection()
 
     rows = connection.execute("""
-        SELECT review_text
+        SELECT sentiment
         FROM reviews
+        WHERE sentiment IS NOT NULL
     """).fetchall()
 
     connection.close()
 
-    total = 0
+    total = len(rows)
 
     positive = 0
     neutral = 0
@@ -105,32 +111,22 @@ def get_dashboard_stats():
 
 
     # --------------------------------------------------------
-    # ANALYZE ALL REVIEWS
+    # COUNT STORED SENTIMENTS
     # --------------------------------------------------------
 
     for row in rows:
 
-        review_text = row["review_text"]
+        sentiment = str(row["sentiment"]).strip().lower()
 
-        if not review_text:
-            continue
-
-        total += 1
-
-        prediction = predict_sentiment(
-            review_text
-        )
-
-
-        if prediction == "positive":
+        if sentiment == "positive":
 
             positive += 1
 
-        elif prediction == "neutral":
+        elif sentiment == "neutral":
 
             neutral += 1
 
-        elif prediction == "negative":
+        elif sentiment == "negative":
 
             negative += 1
 
@@ -180,8 +176,9 @@ def get_sentiment_counts():
     connection = get_connection()
 
     rows = connection.execute("""
-        SELECT review_text
+        SELECT sentiment
         FROM reviews
+        WHERE sentiment IS NOT NULL
     """).fetchall()
 
     connection.close()
@@ -197,25 +194,17 @@ def get_sentiment_counts():
 
     for row in rows:
 
-        review_text = row["review_text"]
+        sentiment = str(row["sentiment"]).strip().lower()
 
-        if not review_text:
-            continue
-
-        prediction = predict_sentiment(
-            review_text
-        )
-
-
-        if prediction == "positive":
+        if sentiment == "positive":
 
             positive += 1
 
-        elif prediction == "neutral":
+        elif sentiment == "neutral":
 
             neutral += 1
 
-        elif prediction == "negative":
+        elif sentiment == "negative":
 
             negative += 1
 
@@ -238,10 +227,11 @@ def get_product_analytics():
     rows = connection.execute("""
         SELECT
             product_name,
-            review_text
+            sentiment
         FROM reviews
         WHERE product_name IS NOT NULL
         AND TRIM(product_name) != ''
+        AND sentiment IS NOT NULL
     """).fetchall()
 
     connection.close()
@@ -267,20 +257,8 @@ def get_product_analytics():
             continue
 
 
-        # Get review
-        review_text = row["review_text"]
-
-        if not review_text:
-            continue
-
-
-        # ----------------------------------------------------
-        # PREDICT SENTIMENT
-        # ----------------------------------------------------
-
-        prediction = predict_sentiment(
-            review_text
-        )
+        # Get sentiment
+        sentiment = str(row["sentiment"]).strip().lower()
 
 
         # ----------------------------------------------------
@@ -319,15 +297,15 @@ def get_product_analytics():
         # INCREASE SENTIMENT COUNT
         # ----------------------------------------------------
 
-        if prediction == "positive":
+        if sentiment == "positive":
 
             product_data[product]["positive"] += 1
 
-        elif prediction == "neutral":
+        elif sentiment == "neutral":
 
             product_data[product]["neutral"] += 1
 
-        elif prediction == "negative":
+        elif sentiment == "negative":
 
             product_data[product]["negative"] += 1
 
@@ -517,12 +495,48 @@ def add_customer_review():
 
 
     # ========================================================
-    # SENTIMENT ANALYSIS
+    # AI SENTIMENT ANALYSIS (GEMINI)
     # ========================================================
 
-    prediction = predict_sentiment(
+    ai_result = analyze_review_with_ai(
         review_text
     )
+
+    if ai_result:
+
+        prediction = ai_result["sentiment"]
+        confidence_score = ai_result.get("confidence", 0)
+        ai_explanation = ai_result.get("explanation", "")
+
+    else:
+
+        # Fallback to sklearn model
+        prediction = predict_sentiment(
+            review_text
+        )
+        confidence_score = 0
+        ai_explanation = "Analyzed using ML model (Gemini unavailable)"
+
+
+    # ========================================================
+    # AI FAKE REVIEW DETECTION (GEMINI)
+    # ========================================================
+
+    fake_result = detect_fake_review(
+        review_text
+    )
+
+    if fake_result:
+
+        is_fake = fake_result.get("is_fake", False)
+        fake_score = fake_result.get("fake_score", 0)
+        fake_reason = fake_result.get("reasoning", "")
+
+    else:
+
+        is_fake = False
+        fake_score = 0
+        fake_reason = "Fake detection unavailable (Gemini not connected)"
 
 
     # ========================================================
@@ -548,7 +562,17 @@ def add_customer_review():
 
         source,
 
-        prediction
+        prediction,
+
+        is_fake,
+
+        fake_score,
+
+        fake_reason,
+
+        ai_explanation,
+
+        confidence_score
 
     )
 
@@ -607,6 +631,23 @@ def add_customer_review():
         analyzed_review=review_text,
 
         aspects=aspects,
+
+
+        # ----------------------------------------------------
+        # AI Analysis Results
+        # ----------------------------------------------------
+
+        confidence_score=confidence_score,
+
+        ai_explanation=ai_explanation,
+
+        is_fake=is_fake,
+
+        fake_score=fake_score,
+
+        fake_reason=fake_reason,
+
+        ai_powered=(ai_result is not None),
 
 
         # ----------------------------------------------------
@@ -672,6 +713,64 @@ def product_analytics():
         product_analytics=product_data
 
     )
+
+
+# ============================================================
+# AI SUMMARY API ENDPOINT
+# ============================================================
+
+@app.route("/ai-summary")
+def ai_summary():
+    """
+    Generate an AI-powered summary for a product's reviews.
+    Query parameter: ?product=ProductName
+    """
+
+    product_name = request.args.get(
+        "product", ""
+    ).strip()
+
+    connection = get_connection()
+
+    if product_name:
+
+        rows = connection.execute("""
+            SELECT review_text
+            FROM reviews
+            WHERE product_name = ?
+            AND review_text IS NOT NULL
+        """, (product_name,)).fetchall()
+
+    else:
+
+        rows = connection.execute("""
+            SELECT review_text
+            FROM reviews
+            WHERE review_text IS NOT NULL
+        """).fetchall()
+
+    connection.close()
+
+    reviews_list = [
+        row["review_text"] for row in rows
+    ]
+
+    if not reviews_list:
+        return jsonify({
+            "error": "No reviews found"
+        })
+
+    summary = generate_review_summary(
+        reviews_list
+    )
+
+    if summary:
+        return jsonify(summary)
+
+    else:
+        return jsonify({
+            "error": "AI summary unavailable. Check your Gemini API key."
+        })
 
 
 # ============================================================

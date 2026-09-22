@@ -25,7 +25,60 @@ def create_database():
     """)
 
     connection.commit()
+
+    # --------------------------------------------------------
+    # MIGRATE: Add AI columns if they don't exist
+    # --------------------------------------------------------
+
+    _migrate_ai_columns(connection)
+
     connection.close()
+
+
+def _migrate_ai_columns(connection):
+    """
+    Add AI-related columns to the reviews table
+    if they don't already exist. This preserves
+    all existing data.
+    """
+
+    cursor = connection.cursor()
+
+    # Get existing column names
+    cursor.execute("PRAGMA table_info(reviews)")
+
+    existing_columns = [
+        row[1] for row in cursor.fetchall()
+    ]
+
+    # New AI columns to add
+    new_columns = {
+        "is_fake": "BOOLEAN DEFAULT 0",
+        "fake_score": "INTEGER DEFAULT 0",
+        "fake_reason": "TEXT",
+        "ai_explanation": "TEXT",
+        "confidence_score": "REAL DEFAULT 0"
+    }
+
+    for column_name, column_type in new_columns.items():
+
+        if column_name not in existing_columns:
+
+            try:
+                connection.execute(
+                    f"ALTER TABLE reviews "
+                    f"ADD COLUMN {column_name} {column_type}"
+                )
+
+                print(
+                    f"[Database] Added column: {column_name}"
+                )
+
+            except sqlite3.OperationalError:
+                # Column already exists
+                pass
+
+    connection.commit()
 
 
 def add_review(
@@ -33,7 +86,12 @@ def add_review(
     review_text,
     rating,
     source,
-    sentiment=None
+    sentiment=None,
+    is_fake=False,
+    fake_score=0,
+    fake_reason=None,
+    ai_explanation=None,
+    confidence_score=0
 ):
     connection = get_connection()
 
@@ -44,15 +102,25 @@ def add_review(
             review_text,
             rating,
             sentiment,
-            source
+            source,
+            is_fake,
+            fake_score,
+            fake_reason,
+            ai_explanation,
+            confidence_score
         )
-        VALUES (?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         product_name,
         review_text,
         rating,
         sentiment,
-        source
+        source,
+        is_fake,
+        fake_score,
+        fake_reason,
+        ai_explanation,
+        confidence_score
     ))
 
     connection.commit()
