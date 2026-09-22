@@ -138,7 +138,6 @@
             max-width: 1400px;
         }
 
-        /* Top Bar */
         .top-header {
             display: flex;
             justify-content: space-between;
@@ -167,18 +166,6 @@
             display: flex;
             align-items: center;
             gap: 16px;
-        }
-
-        .how-it-works-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 13px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-weight: 600;
         }
 
         .user-profile {
@@ -216,7 +203,7 @@
             align-items: center;
             gap: 12px;
             box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .search-input-box {
@@ -265,6 +252,28 @@
 
         .btn-analyze:hover {
             background-color: var(--primary-hover);
+        }
+
+        /* ================= AGENT WORKFLOW ACTIVITY BAR ================= */
+        .agent-stepper-bar {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 20px;
+        }
+
+        .step-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--success);
         }
 
         /* ================= PRODUCT HEADER CARD ================= */
@@ -326,14 +335,9 @@
             margin-top: 6px;
         }
 
-        .product-meta-row strong {
-            color: #334155;
-        }
+        .product-meta-row strong { color: #334155; }
 
-        .product-actions {
-            display: flex;
-            gap: 10px;
-        }
+        .product-actions { display: flex; gap: 10px; }
 
         .btn-outline {
             background: #ffffff;
@@ -348,12 +352,6 @@
             align-items: center;
             gap: 6px;
             text-decoration: none;
-            transition: all 0.15s ease;
-        }
-
-        .btn-outline:hover {
-            background: #f8fafc;
-            border-color: #cbd5e1;
         }
 
         .btn-primary-sm {
@@ -460,7 +458,7 @@
             margin-bottom: 16px;
         }
 
-        /* Sentiment Donut Layout */
+        /* Donut Chart */
         .donut-container {
             display: flex;
             align-items: center;
@@ -609,11 +607,43 @@
             line-height: 1.4;
         }
 
-        /* ================= BOTTOM 2-COLUMN SECTION (INSIGHTS & RECOMMENDATIONS) ================= */
+        /* ================= CLUSTERS & QUALITY SECTION ================= */
+        .clusters-section-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+
+        .cluster-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .cluster-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .cluster-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        /* ================= BOTTOM 2-COLUMN SECTION ================= */
         .bottom-insights-grid {
             display: grid;
             grid-template-columns: 1.4fr 1.6fr;
             gap: 18px;
+            margin-bottom: 24px;
         }
 
         .ai-insights-box {
@@ -670,19 +700,90 @@
             flex-shrink: 0;
         }
 
-        /* Responsive Breakpoints */
-        @media (max-width: 1200px) {
-            .analytics-main-grid { grid-template-columns: 1fr; }
-            .metric-cards-grid { grid-template-columns: repeat(2, 1fr); }
-            .bottom-insights-grid { grid-template-columns: 1fr; }
+        /* ================= CHAT WIDGET ================= */
+        .chat-widget-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 22px;
+            margin-bottom: 24px;
         }
 
-        @media (max-width: 768px) {
-            .sidebar { display: none; }
-            .main-wrapper { margin-left: 0; padding: 20px; }
-            .search-action-card { flex-direction: column; align-items: stretch; }
-            .product-header-card { flex-direction: column; gap: 16px; align-items: flex-start; }
-            .metric-cards-grid { grid-template-columns: 1fr; }
+        .chat-input-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .chat-input-row input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .chat-output-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 14px;
+            margin-top: 12px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #1e293b;
+            display: none;
+        }
+
+        /* ================= REVIEW INTELLIGENCE TABLE ================= */
+        .review-table-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .table-custom {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 14px;
+        }
+
+        .table-custom th, .table-custom td {
+            padding: 12px 14px;
+            text-align: left;
+            font-size: 13px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .table-custom th {
+            font-weight: 700;
+            color: var(--text-muted);
+            background: #f8fafc;
+        }
+
+        .badge-pill {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .badge-pill.high { background: #fee2e2; color: #dc2626; }
+        .badge-pill.med { background: #fef3c7; color: #d97706; }
+        .badge-pill.low { background: #ecfdf5; color: #16a34a; }
+
+        .btn-evidence {
+            background: #eff6ff;
+            color: var(--primary-blue);
+            border: 1px solid #bfdbfe;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -701,24 +802,16 @@
 
             <ul class="nav-menu">
                 <li class="nav-item active">
-                    <a href="{{ url_for('home') }}">
-                        <span>🏠</span> Home
-                    </a>
+                    <a href="{{ url_for('home') }}"><span>🏠</span> Home / Dashboard</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ url_for('home') }}">
-                        <span>🔍</span> Analyze Product
-                    </a>
+                    <a href="{{ url_for('compare') }}"><span>📊</span> Compare Products</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ url_for('reviews') }}">
-                        <span>📄</span> My Analyses / Raw
-                    </a>
+                    <a href="{{ url_for('reviews') }}"><span>📄</span> My Analyses / Raw</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ url_for('product_analytics') }}">
-                        <span>📊</span> Compare Products
-                    </a>
+                    <a href="{{ url_for('product_analytics') }}"><span>📈</span> Product Analytics</a>
                 </li>
             </ul>
         </div>
@@ -736,13 +829,12 @@
         <header class="top-header">
             <div class="top-headline">
                 <h1>AI-Powered <span>Customer Review Intelligence Agent</span></h1>
-                <p>Let AI analyze thousands of customer reviews and give you meaningful insights.</p>
+                <p>Let AI investigate thousands of customer reviews and uncover deep product patterns.</p>
             </div>
             <div class="user-nav-actions">
-                <button class="how-it-works-btn">❓ How it works?</button>
                 <div class="user-profile">
                     <div class="user-avatar">S</div>
-                    <span>Student</span>
+                    <span>Student Developer</span>
                 </div>
             </div>
         </header>
@@ -754,21 +846,35 @@
                 <input 
                     type="text" 
                     name="product" 
-                    placeholder="Enter product name (e.g. Samsung Galaxy S25, iPhone 16, or URL)..." 
+                    placeholder="Enter product name (e.g. iPhone 18 Pro Max, Samsung Galaxy S25, or URL)..." 
                     value="{{ product_query }}" 
                     required
                 >
             </div>
-            <select class="source-select">
-                <option value="auto">🌐 Auto Detect Source</option>
-                <option value="amazon">Amazon Reviews</option>
-                <option value="flipkart">Flipkart Reviews</option>
-                <option value="reddit">Reddit Discussions</option>
+            <select name="source" class="source-select">
+                <option value="auto" {% if source_filter == 'auto' %}selected{% endif %}>🌐 All Sources (Amazon + Flipkart)</option>
+                <option value="amazon" {% if source_filter == 'amazon' %}selected{% endif %}>Amazon Reviews</option>
+                <option value="flipkart" {% if source_filter == 'flipkart' %}selected{% endif %}>Flipkart Reviews</option>
             </select>
             <button type="submit" class="btn-analyze">
-                Analyze Product →
+                Start AI Analysis →
             </button>
         </form>
+
+        <!-- Agent Workflow Activity Stepper -->
+        <div class="agent-stepper-bar">
+            <span class="step-pill">✓ Product Identified</span>
+            <span>→</span>
+            <span class="step-pill">✓ Sources Processed</span>
+            <span>→</span>
+            <span class="step-pill">✓ Reviews Cleaned</span>
+            <span>→</span>
+            <span class="step-pill">✓ Clusters &amp; Patterns Detected</span>
+            <span>→</span>
+            <span class="step-pill">✓ Aspects Mined</span>
+            <span>→</span>
+            <span class="step-pill">✓ Report Generated</span>
+        </div>
 
         <!-- ================= PRODUCT HEADER CARD ================= -->
         <div class="product-header-card">
@@ -793,44 +899,34 @@
                 </div>
             </div>
             <div class="product-actions">
-                <a href="{{ url_for('reviews') }}" class="btn-outline">📄 View Raw Reviews</a>
+                <a href="#reviews-table" class="btn-outline">📄 Review Intelligence</a>
+                <a href="{{ url_for('compare', product_a=report.product_name) }}" class="btn-outline">📊 Compare</a>
                 <button class="btn-outline" onclick="window.print()">📥 Download Report</button>
-                <button class="btn-primary-sm" onclick="navigator.clipboard.writeText(window.location.href); alert('Report link copied!');">🔗 Share</button>
             </div>
         </div>
 
         <!-- ================= TOP 4 KEY METRIC CARDS ================= -->
         <section class="metric-cards-grid">
-            
-            <!-- 1. Overall Perception -->
             <div class="metric-card">
                 <div class="metric-card-label">Overall Customer Perception</div>
                 <div class="metric-value-row {{ report.perception_mood }}">
-                    {% if report.perception_mood == 'positive' %}
-                        <span>😊</span>
-                    {% elif report.perception_mood == 'negative' %}
-                        <span>🙁</span>
-                    {% else %}
-                        <span>😐</span>
-                    {% endif %}
+                    {% if report.perception_mood == 'positive' %}<span>😊</span>
+                    {% elif report.perception_mood == 'negative' %}<span>🙁</span>
+                    {% else %}<span>😐</span>{% endif %}
                     <span>{{ report.overall_perception }}</span>
                 </div>
                 <div class="metric-subtext">Based on {{ report.total_reviews }} customer reviews</div>
             </div>
 
-            <!-- 2. Customer Satisfaction -->
             <div class="metric-card">
                 <div class="metric-card-label">Customer Satisfaction</div>
-                <div class="metric-value-row positive">
-                    {{ report.customer_satisfaction }}%
-                </div>
+                <div class="metric-value-row positive">{{ report.customer_satisfaction }}%</div>
                 <div class="progress-bar-container">
                     <div class="progress-bar-fill" style="width: {{ report.customer_satisfaction }}%;"></div>
                 </div>
-                <div class="metric-subtext">Overall positive sentiment</div>
+                <div class="metric-subtext">Overall positive sentiment ratio</div>
             </div>
 
-            <!-- 3. Suspicious Reviews -->
             <div class="metric-card">
                 <div class="metric-card-label">Suspicious Reviews</div>
                 <div class="metric-value-row negative">
@@ -840,20 +936,14 @@
                 <div class="metric-subtext">Potentially suspicious ({{ report.suspicious_count }}/{{ report.total_reviews }})</div>
             </div>
 
-            <!-- 4. Key Takeaway -->
             <div class="metric-card">
                 <div class="metric-card-label">💡 Key Takeaway</div>
-                <p class="key-takeaway-text">
-                    "{{ report.key_takeaway }}"
-                </p>
+                <p class="key-takeaway-text">"{{ report.key_takeaway }}"</p>
             </div>
-
         </section>
 
         <!-- ================= 3-COLUMN ANALYTICS GRID ================= -->
         <section class="analytics-main-grid">
-
-            <!-- Col 1: Sentiment Distribution -->
             <div class="analytics-card">
                 <div class="card-header-title">Sentiment Distribution</div>
                 <div class="donut-container">
@@ -864,36 +954,22 @@
                             <span>Reviews</span>
                         </div>
                     </div>
-
                     <div class="donut-legend">
-                        <div class="legend-item">
-                            <span class="legend-dot pos"></span>
-                            <span>Positive &nbsp; {{ report.positive_percentage }}% ({{ report.positive_count }})</span>
-                        </div>
-                        <div class="legend-item">
-                            <span class="legend-dot neu"></span>
-                            <span>Neutral &nbsp; {{ report.neutral_percentage }}% ({{ report.neutral_count }})</span>
-                        </div>
-                        <div class="legend-item">
-                            <span class="legend-dot neg"></span>
-                            <span>Negative &nbsp; {{ report.negative_percentage }}% ({{ report.negative_count }})</span>
-                        </div>
+                        <div class="legend-item"><span class="legend-dot pos"></span><span>Positive {{ report.positive_percentage }}% ({{ report.positive_count }})</span></div>
+                        <div class="legend-item"><span class="legend-dot neu"></span><span>Neutral {{ report.neutral_percentage }}% ({{ report.neutral_count }})</span></div>
+                        <div class="legend-item"><span class="legend-dot neg"></span><span>Negative {{ report.negative_percentage }}% ({{ report.negative_count }})</span></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Col 2: Aspect Analysis -->
             <div class="analytics-card">
-                <div class="card-header-title">Aspect Analysis</div>
+                <div class="card-header-title">Aspect-Level Sentiment</div>
                 <div class="aspect-list">
-                    {% for aspect_name, aspect_info in report.aspects.items() %}
+                    {% for aspect_key, aspect_info in report.aspects.items() %}
                     <div class="aspect-bar-item">
-                        <span class="aspect-name-label">{{ aspect_name|capitalize }}</span>
+                        <span class="aspect-name-label">{{ aspect_info.aspect_name }}</span>
                         <div class="aspect-meter-bg">
-                            <div 
-                                class="aspect-meter-fill {% if aspect_info.score_percent >= 65 %}pos{% elif aspect_info.score_percent <= 45 %}neg{% else %}neu{% endif %}" 
-                                style="width: {{ aspect_info.score_percent }}%;">
-                            </div>
+                            <div class="aspect-meter-fill {% if aspect_info.score_percent >= 65 %}pos{% elif aspect_info.score_percent <= 45 %}neg{% else %}neu{% endif %}" style="width: {{ aspect_info.score_percent }}%;"></div>
                         </div>
                         <span class="aspect-score-label">{{ aspect_info.score_percent }}%</span>
                     </div>
@@ -901,53 +977,80 @@
                 </div>
             </div>
 
-            <!-- Col 3: Common Topics (from AI) -->
             <div class="analytics-card">
-                <div class="card-header-title">Common Topics (from AI)</div>
-                
-                <!-- Most Liked -->
+                <div class="card-header-title">Common Topics &amp; Recurring Complaints</div>
                 <div class="topic-group-box liked">
-                    <div class="topic-group-title">
-                        <span>👍</span> Most Liked
-                    </div>
+                    <div class="topic-group-title"><span>👍</span> Most Liked</div>
                     <ul class="topic-items-list">
                         {% for item in report.most_liked %}
                         <li>{{ item }}</li>
                         {% endfor %}
                     </ul>
                 </div>
-
-                <!-- Most Complained -->
                 <div class="topic-group-box complained">
-                    <div class="topic-group-title">
-                        <span>👎</span> Most Complained
-                    </div>
+                    <div class="topic-group-title"><span>👎</span> Recurring Complaints</div>
                     <ul class="topic-items-list">
-                        {% for item in report.most_complained %}
-                        <li>{{ item }}</li>
+                        {% for c in report.recurring_complaints %}
+                        <li><strong>{{ c.complaint }}</strong> ({{ c.percentage }}% mentions)</li>
                         {% endfor %}
                     </ul>
                 </div>
+            </div>
+        </section>
 
+        <!-- ================= CLUSTERS & QUALITY OVERVIEW ================= -->
+        <section class="clusters-section-grid">
+            <div class="cluster-card">
+                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">🔗 Suspicious Review Clusters</h3>
+                {% if report.clusters %}
+                    {% for cluster in report.clusters %}
+                    <div class="cluster-item">
+                        <div class="cluster-header">
+                            <span>Cluster #{{ cluster.cluster_id }} ({{ cluster.size }} reviews)</span>
+                            <span style="color: var(--danger);">{{ cluster.average_similarity }}% Similarity</span>
+                        </div>
+                        <p style="font-size: 12px; color: #475569; font-style: italic;">"{{ cluster.representative_snippet }}"</p>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Primary Source: {{ cluster.common_source }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="font-size: 13px; color: var(--text-muted);">No suspicious review clusters detected.</p>
+                {% endif %}
             </div>
 
+            <div class="cluster-card">
+                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">📊 Review Quality Breakdown</h3>
+                <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+                    <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9;">
+                        <span>Useful &amp; Informative Reviews</span>
+                        <strong>{{ report.quality_breakdown.useful_informative }}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9;">
+                        <span>Low-Information Reviews</span>
+                        <strong>{{ report.quality_breakdown.low_information }}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9;">
+                        <span>Near-Duplicate Cluster Reviews</span>
+                        <strong>{{ report.quality_breakdown.near_duplicate_cluster }}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 6px 0; color: var(--danger);">
+                        <span>Potentially Suspicious Reviews</span>
+                        <strong>{{ report.quality_breakdown.potentially_suspicious }}</strong>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- ================= BOTTOM 2-COLUMN SECTION ================= -->
         <section class="bottom-insights-grid">
-            
-            <!-- AI-Generated Insights -->
             <div class="ai-insights-box">
                 <div class="insights-header">
                     <span>✨</span>
                     <span>AI-Generated Insights</span>
                 </div>
-                <p class="ai-insights-paragraph">
-                    {{ report.ai_insights }}
-                </p>
+                <p class="ai-insights-paragraph">{{ report.ai_insights }}</p>
             </div>
 
-            <!-- Recommendations -->
             <div class="ai-insights-box">
                 <div class="insights-header">
                     <span>🎯</span>
@@ -962,10 +1065,90 @@
                     {% endfor %}
                 </ul>
             </div>
+        </section>
 
+        <!-- ================= INTERACTIVE "ASK THE REVIEW AGENT" ================= -->
+        <section class="chat-widget-card">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 20px;">💬</span>
+                <div>
+                    <h3 style="font-size: 16px; font-weight: 800;">Ask the Review Agent</h3>
+                    <p style="font-size: 12px; color: var(--text-muted);">Ask questions about {{ report.product_name }}'s reviews, complaints, or suspicious patterns.</p>
+                </div>
+            </div>
+            <div class="chat-input-row">
+                <input type="text" id="chat-query" placeholder="e.g. Why are battery complaints high? Show me suspicious reviews...">
+                <button type="button" class="btn-analyze" onclick="askAgent()">Ask Agent →</button>
+            </div>
+            <div id="chat-output" class="chat-output-box"></div>
+        </section>
+
+        <!-- ================= REVIEW INTELLIGENCE TABLE ================= -->
+        <section class="review-table-card" id="reviews-table">
+            <h3 style="font-size: 16px; font-weight: 800;">Review Intelligence Explorer</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Evidence-backed audit table for all analyzed customer reviews.</p>
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>Source</th>
+                        <th>Rating</th>
+                        <th>Review Text</th>
+                        <th>Sentiment</th>
+                        <th>Suspicion Risk</th>
+                        <th>Evidence / Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in report.reviews %}
+                    <tr>
+                        <td><strong>{{ r.source }}</strong></td>
+                        <td>★ {{ r.rating }}</td>
+                        <td style="max-width: 320px;">{{ r.review_text }}</td>
+                        <td>
+                            <span class="badge-pill {% if r.sentiment == 'positive' %}low{% elif r.sentiment == 'negative' %}high{% else %}med{% endif %}">
+                                {{ r.sentiment|capitalize }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge-pill {% if r.risk_status == 'High Suspicion' %}high{% elif r.risk_status == 'Medium Suspicion' %}med{% else %}low{% endif %}">
+                                {{ r.risk_status }} ({{ r.fake_score }}/100)
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn-evidence" onclick="alert('Why Flagged:\n\n• ' + {{ r.why_flagged|tojson }}.join('\n• '))">
+                                🔍 Why Flagged?
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </section>
 
     </main>
 
+    <script>
+        async function askAgent() {
+            const input = document.getElementById('chat-query');
+            const output = document.getElementById('chat-output');
+            const q = input.value.trim();
+            if (!q) return;
+
+            output.style.display = 'block';
+            output.innerHTML = '<em>Thinking... Querying review intelligence data...</em>';
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: q, product: "{{ report.product_name }}" })
+                });
+                const data = await res.json();
+                output.innerHTML = `<strong>Review Agent:</strong><br>${data.answer.replace(/\n/g, '<br>')}`;
+            } catch (err) {
+                output.innerHTML = '<strong>Error:</strong> Could not retrieve answer from agent.';
+            }
+        }
+    </script>
 </body>
 </html>

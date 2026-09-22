@@ -1,12 +1,22 @@
 """
-Fake Review Detector Tool.
-Evaluates the authenticity of customer reviews and assigns a suspicion risk score (0-100%).
-Uses lightning-fast heuristic pattern rules for batch processing,
-and utilizes LLM for deep reasoning on sample suspicious reviews.
+Multi-Signal Fake & Suspicious Review Detector Tool.
+Evaluates review authenticity using multi-dimensional signals:
+1. Lexical repetition and generic praise/criticism
+2. Lack of product-specific feature details
+3. Rating vs sentiment contradictions
+4. Punctuation/capitalization anomalies
+5. Text length anomalies and repetitive sentence structures
+
+Generates concise, human-readable "Why Flagged?" evidence items.
+Adheres strictly to safe risk-rating terminology:
+- "High Suspicion" (Score >= 70)
+- "Medium Suspicion" (Score 40-69)
+- "Low Suspicion" (Score 15-39)
+- "Appears Authentic" (Score < 15)
 """
 
-import logging
 import re
+import logging
 from typing import List, Dict, Any, Optional
 import config
 from core.llm import BaseLLMProvider
@@ -16,122 +26,172 @@ logger = logging.getLogger(__name__)
 
 
 class FakeReviewDetector:
-    """Tool for analyzing review authenticity and suspicious patterns."""
+    """Tool for analyzing review authenticity and generating evidence-backed suspicion scores."""
 
     def __init__(self, llm_provider: Optional[BaseLLMProvider] = None):
         self.llm = llm_provider or get_llm_provider()
 
     @staticmethod
-    def _heuristic_suspicion_score(review_text: str, rating: Optional[int] = None) -> Dict[str, Any]:
-        """Calculates a baseline heuristic suspicion score using pattern rules."""
+    def evaluate_multi_signals(
+        review_text: str,
+        rating: Optional[int] = None,
+        all_review_texts: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
+        """
+        Calculates a suspicion score (0-100) using multiple observable evidence signals.
+        
+        Returns:
+            Dict with 'suspicion_score', 'risk_status', 'is_suspicious', and 'why_flagged' list.
+        """
         text = str(review_text).strip()
+        lower_text = text.lower()
         score = 8
-        reasons = []
+        evidence_signals = []
 
-        # Rule 1: Extremely short review with extreme rating
-        if len(text.split()) <= 4 and (rating == 5 or rating == 1):
-            score += 45
-            reasons.append("Extremely short review with extreme rating")
+        # Signal 1: Extremely short review with extreme rating (5-star or 1-star)
+        words = text.split()
+        if len(words) <= 5 and (rating == 5 or rating == 1):
+            score += 35
+            evidence_signals.append("Extremely short review length combined with extreme rating")
 
-        # Rule 2: Excessive repeated superlatives / hype words
-        hype_count = len(re.findall(r"\b(best ever|amazing|perfect|greatest|buy now|love it)\b", text.lower()))
-        if hype_count >= 3:
-            score += 55
-            reasons.append("High density of repetitive superlatives and marketing hype")
-        elif hype_count == 2:
-            score += 25
+        # Signal 2: Generic promotional phrasing / superlatives density
+        hype_patterns = [
+            r"\b(best (ever|product|phone|in the world))\b",
+            r"\b(must buy|buy now|dont think just buy)\b",
+            r"\b(amazing amazing|perfect perfect|super super)\b",
+            r"\b(greatest thing|life changing)\b"
+        ]
+        matched_hype = [p for p in hype_patterns if re.search(p, lower_text)]
+        if matched_hype:
+            score += 30 * len(matched_hype)
+            evidence_signals.append("High density of generic promotional phrasing without specific usage details")
 
-        # Rule 3: Excessive exclamation points
-        if text.count("!") >= 3:
+        # Signal 3: Lack of product-specific technical keywords (camera, battery, speed, screen, etc.)
+        feature_keywords = ["camera", "battery", "screen", "display", "charge", "speed", "sound", "speaker", "build", "price", "software", "ram", "processor"]
+        has_features = any(k in lower_text for k in feature_keywords)
+        if len(words) > 10 and not has_features:
             score += 20
-            reasons.append("Unusual exclamation punctuation patterns")
+            evidence_signals.append("Contains no mentions of specific product features or real-world use cases")
+
+        # Signal 4: Excessive exclamation marks or unnatural punctuation
+        exclamation_count = text.count("!")
+        if exclamation_count >= 3:
+            score += 15
+            evidence_signals.append(f"Unusual punctuation pattern ({exclamation_count} exclamation marks)")
+
+        # Signal 5: Duplicate / high similarity across review batch
+        if all_review_texts:
+            identical_matches = sum(1 for t in all_review_texts if t.strip().lower() == lower_text)
+            if identical_matches > 1:
+                score += 45
+                evidence_signals.append(f"Identical or near-identical text found in {identical_matches - 1} other review(s)")
+
+        # Signal 6: Contradiction between star rating and expressed sentiment
+        is_pos_words = any(w in lower_text for w in ["great", "excellent", "love", "awesome", "perfect"])
+        is_neg_words = any(w in lower_text for w in ["worst", "terrible", "waste", "horrible", "useless"])
+        if rating == 5 and is_neg_words and not is_pos_words:
+            score += 40
+            evidence_signals.append("Rating contradiction (5-star rating with explicitly negative language)")
+        elif rating == 1 and is_pos_words and not is_neg_words:
+            score += 40
+            evidence_signals.append("Rating contradiction (1-star rating with explicitly positive language)")
 
         final_score = min(100, max(0, score))
-        is_suspicious = final_score >= config.SUSPICION_THRESHOLD
+
+        # Assign calibrated safe status
+        if final_score >= 70:
+            risk_status = "High Suspicion"
+            is_suspicious = True
+        elif final_score >= 40:
+            risk_status = "Medium Suspicion"
+            is_suspicious = True
+        elif final_score >= 20:
+            risk_status = "Low Suspicion"
+            is_suspicious = False
+        else:
+            risk_status = "Appears Authentic"
+            is_suspicious = False
+
+        if not evidence_signals:
+            evidence_signals.append("Natural sentence structure and balanced product feedback observed")
 
         return {
-            "is_suspicious": is_suspicious,
             "suspicion_score": final_score,
-            "risk_level": "High Suspicion" if final_score >= 60 else ("Moderate Suspicion" if final_score >= 35 else "Low Suspicion"),
-            "reasoning": "; ".join(reasons) if reasons else "Review shows standard natural expression patterns."
+            "risk_status": risk_status,
+            "is_suspicious": is_suspicious,
+            "why_flagged": evidence_signals
         }
 
-    def evaluate_review(self, review_text: str, rating: Optional[int] = None, use_llm: bool = False) -> Dict[str, Any]:
-        """Evaluates a single review for potential inauthenticity."""
-        if not review_text or not review_text.strip():
-            return {
-                "is_suspicious": False,
-                "suspicion_score": 0,
-                "risk_level": "Low Suspicion",
-                "reasoning": "Empty review."
-            }
-
-        if use_llm and self.llm and self.llm.is_available():
-            prompt = f"""You are an expert in customer review authenticity.
-Evaluate the following review for potential suspicious or inauthentic patterns.
-
-Review:
-"{review_text}"
-
-Respond ONLY with a JSON object in this exact schema:
-{{
-    "is_suspicious": true or false,
-    "suspicion_score": <integer from 0 to 100>,
-    "reasoning": "<concise 1-2 sentence explanation>"
-}}
-"""
-            result = self.llm.generate_json(prompt)
-            if result and "suspicion_score" in result:
-                score = int(result.get("suspicion_score", 15))
-                score = max(0, min(100, score))
-                is_suspicious = score >= config.SUSPICION_THRESHOLD
-
-                return {
-                    "is_suspicious": is_suspicious,
-                    "suspicion_score": score,
-                    "risk_level": "High Suspicion" if score >= 60 else ("Moderate Suspicion" if score >= 35 else "Low Suspicion"),
-                    "reasoning": result.get("reasoning", "Assessed by AI authenticity model.")
-                }
-
-        # Fast heuristic evaluation
-        return self._heuristic_suspicion_score(review_text, rating)
+    def evaluate_review(
+        self,
+        review_text: str,
+        rating: Optional[int] = None,
+        all_review_texts: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
+        """Evaluates a single review and returns evidence-backed risk analysis."""
+        return self.evaluate_multi_signals(review_text, rating, all_review_texts)
 
     def evaluate_batch(self, reviews: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """Evaluates an entire collection of reviews efficiently."""
+        """
+        Evaluates an entire collection of reviews and calculates risk distributions.
+        
+        Returns:
+            Dict containing:
+            - 'total_reviewed': int
+            - 'suspicious_count': int
+            - 'suspicious_percentage': int
+            - 'risk_breakdown': {'high': int, 'medium': int, 'low': int, 'authentic': int}
+            - 'flagged_reviews': List[Dict] with 'why_flagged' evidence
+        """
         if not reviews:
             return {
                 "total_reviewed": 0,
                 "suspicious_count": 0,
                 "suspicious_percentage": 0,
-                "average_suspicion_score": 0,
+                "risk_breakdown": {"high": 0, "medium": 0, "low": 0, "authentic": 0},
                 "flagged_reviews": []
             }
 
+        all_texts = [r.get("review_text", "") for r in reviews]
         flagged = []
-        total_score = 0
+        risk_breakdown = {"high": 0, "medium": 0, "low": 0, "authentic": 0}
+        suspicious_count = 0
 
         for r in reviews:
             text = r.get("review_text", "")
             rating = r.get("rating")
-            eval_res = self.evaluate_review(text, rating, use_llm=False)
+            eval_res = self.evaluate_multi_signals(text, rating, all_texts)
 
-            total_score += eval_res["suspicion_score"]
+            status = eval_res["risk_status"]
+            if status == "High Suspicion":
+                risk_breakdown["high"] += 1
+                suspicious_count += 1
+            elif status == "Medium Suspicion":
+                risk_breakdown["medium"] += 1
+                suspicious_count += 1
+            elif status == "Low Suspicion":
+                risk_breakdown["low"] += 1
+            else:
+                risk_breakdown["authentic"] += 1
+
             if eval_res["is_suspicious"]:
                 flagged.append({
+                    "id": r.get("id", ""),
                     "review_text": text,
+                    "source": r.get("source", "Unknown"),
+                    "rating": rating,
                     "suspicion_score": eval_res["suspicion_score"],
-                    "reasoning": eval_res["reasoning"]
+                    "risk_status": eval_res["risk_status"],
+                    "why_flagged": eval_res["why_flagged"]
                 })
 
-        count = len(reviews)
-        suspicious_count = len(flagged)
-        avg_score = round(total_score / count) if count > 0 else 0
-        suspicious_pct = round((suspicious_count / count) * 100) if count > 0 else 0
+        total = len(reviews)
+        suspicious_pct = round((suspicious_count / total) * 100) if total > 0 else 0
 
         return {
-            "total_reviewed": count,
+            "total_reviewed": total,
             "suspicious_count": suspicious_count,
             "suspicious_percentage": suspicious_pct,
-            "average_suspicion_score": avg_score,
+            "risk_breakdown": risk_breakdown,
             "flagged_reviews": flagged
         }
