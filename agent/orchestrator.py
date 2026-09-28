@@ -1,14 +1,16 @@
 """
 Review Intelligence Agent Orchestrator.
 Coordinates the autonomous workflow:
-1. Multi-source collection
+1. Multi-source collection & URL resolution
 2. Preprocessing & deduplication
 3. Fast ML + LLM sentiment classification
 4. Granular aspect discovery and scoring
-5. Multi-signal fake review & "Why Flagged?" evidence evaluation
-6. Review similarity clustering
-7. Quantified recurring complaints & emerging issue trends
-8. Executive synthesis and strategic recommendations
+5. Multi-signal fake review & Product Trust Index (0-100%)
+6. Adjusted Real Customer Rating calculation
+7. Review similarity clustering
+8. Quantified recurring complaints & emerging issue trends
+9. Multi-retailer verified purchase options (Official Brand Store, Amazon, Flipkart, Croma, Best Buy)
+10. Background review monitoring status & activity logging
 """
 
 from datetime import datetime
@@ -25,6 +27,8 @@ from tools.fake_detector import FakeReviewDetector
 from tools.clustering import ReviewClusterer
 from tools.trend_analyzer import TrendAnalyzer
 from tools.report_generator import ReportGenerator
+from tools.purchase_recommender import PurchaseRecommender
+from tools.monitor import ProductReviewMonitor
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +36,7 @@ logger = logging.getLogger(__name__)
 class ReviewIntelligenceAgent:
     """
     Autonomous AI Agent for Product Customer Review Intelligence.
-    Acts as the main orchestrator coordinating all specialized analysis tools.
+    Acts as the main orchestrator directing specialized tools.
     """
 
     def __init__(self, llm_provider: Optional[BaseLLMProvider] = None):
@@ -47,6 +51,8 @@ class ReviewIntelligenceAgent:
         self.clusterer = ReviewClusterer(similarity_threshold=0.65)
         self.trend_analyzer = TrendAnalyzer(self.llm)
         self.report_generator = ReportGenerator(self.llm)
+        self.purchase_recommender = PurchaseRecommender()
+        self.monitor = ProductReviewMonitor()
 
     def analyze_product(
         self,
@@ -132,7 +138,7 @@ class ReviewIntelligenceAgent:
         # Step 4: Granular Aspect Discovery & Aspect Sentiment
         aspect_breakdown = self.aspect_analyzer.aggregate_aspects(cleaned_reviews)
 
-        # Step 5: Fake Review Batch Evaluation
+        # Step 5: Fake Review Batch Evaluation with Product Trust Score & Adjusted Real Rating
         fake_analysis = self.fake_detector.evaluate_batch(cleaned_reviews)
 
         # Step 6: Review Clustering Analysis
@@ -141,7 +147,14 @@ class ReviewIntelligenceAgent:
         # Step 7: Quantified Recurring Complaints & Emerging Issues
         trend_analysis = self.trend_analyzer.analyze_trends(cleaned_reviews, aspect_breakdown)
 
-        # Step 8: Executive Report & Recommendations Generation
+        # Step 8: Multi-Retailer Purchase Options
+        category = raw_reviews[0].get("category", "Electronics & Consumer Goods") if raw_reviews else "Consumer Goods"
+        purchase_options = self.purchase_recommender.get_purchase_options(product_name, category)
+
+        # Step 9: Review Monitoring Status & Activity Log
+        monitoring_info = self.monitor.get_monitoring_summary(product_name)
+
+        # Step 10: Executive Report & Recommendations Generation
         report_data = self.report_generator.generate_report(
             product_name=product_name,
             perception=overall_perception,
@@ -150,8 +163,6 @@ class ReviewIntelligenceAgent:
             trend_data=trend_analysis,
             fake_data=fake_analysis
         )
-
-        category = raw_reviews[0].get("category", "Electronics & Consumer Goods") if raw_reviews else "Consumer Goods"
 
         # Review Quality Breakdown
         useful_count = sum(1 for r in analyzed_reviews if not r["is_fake"] and len(r.get("review_text", "").split()) > 5)
@@ -166,7 +177,7 @@ class ReviewIntelligenceAgent:
             "potentially_suspicious": suspicious_count
         }
 
-        # Step 9: Assemble Final Product Intelligence Report
+        # Step 11: Assemble Final Product Intelligence Report
         intelligence_report = {
             "product_name": product_name,
             "category": category,
@@ -174,6 +185,14 @@ class ReviewIntelligenceAgent:
             "sources_summary": sources_summary,
             "analysis_date": datetime.now().strftime("%d %b %Y, %I:%M %p"),
             "status": "Analysis Completed",
+            
+            # Trust & Real Review Metrics
+            "product_trust_score": fake_analysis.get("product_trust_score", 90),
+            "trust_grade": fake_analysis.get("trust_grade", "A"),
+            "claimed_rating": fake_analysis.get("claimed_rating", 4.5),
+            "adjusted_real_rating": fake_analysis.get("adjusted_real_rating", 4.3),
+            "rating_difference": fake_analysis.get("rating_difference", 0.2),
+            "trust_verdict": fake_analysis.get("trust_verdict", "Highly Authentic"),
             
             # Key Top Metric Cards
             "overall_perception": overall_perception,
@@ -202,7 +221,13 @@ class ReviewIntelligenceAgent:
             "recurring_complaints": trend_analysis.get("recurring_complaints", []),
             "emerging_issues": trend_analysis.get("emerging_issues", []),
             
-            # Review Clusters
+            # Multi-Retailer Purchase Options
+            "purchase_options": purchase_options,
+            
+            # Continuous Monitoring Status
+            "monitoring_info": monitoring_info,
+            
+            # Review Clusters & Quality Breakdown
             "clusters": clusters,
             "quality_breakdown": quality_breakdown,
             
@@ -214,5 +239,5 @@ class ReviewIntelligenceAgent:
             "reviews": analyzed_reviews
         }
 
-        logger.info(f"[ReviewIntelligenceAgent] Analysis complete for '{product_name}'. Satisfaction: {satisfaction_score}%, Suspicious: {suspicious_count}")
+        logger.info(f"[ReviewIntelligenceAgent] Analysis complete for '{product_name}'. Trust Score: {intelligence_report['product_trust_score']}%")
         return intelligence_report

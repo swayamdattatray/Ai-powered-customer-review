@@ -1,5 +1,6 @@
 """
-Tools package initialization exporting all tools.
+Tools package initialization.
+Exports all independent tools.
 """
 
 from tools.preprocessor import ReviewPreprocessor
@@ -10,6 +11,8 @@ from tools.fake_detector import FakeReviewDetector
 from tools.clustering import ReviewClusterer
 from tools.trend_analyzer import TrendAnalyzer
 from tools.report_generator import ReportGenerator
+from tools.purchase_recommender import PurchaseRecommender
+from tools.monitor import ProductReviewMonitor
 
 __all__ = [
     "ReviewPreprocessor",
@@ -19,5 +22,7 @@ __all__ = [
     "FakeReviewDetector",
     "ReviewClusterer",
     "TrendAnalyzer",
-    "ReportGenerator"
+    "ReportGenerator",
+    "PurchaseRecommender",
+    "ProductReviewMonitor"
 ]

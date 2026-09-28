@@ -1,7 +1,8 @@
 """
 Flask Web Application for AI-Powered Customer Review Intelligence Agent.
 Handles dashboard rendering, dynamic product investigations, multi-product comparisons,
-review intelligence explorer with evidence modals, and conversational 'Ask the Review Agent'.
+review intelligence explorer with evidence modals, conversational 'Ask the Review Agent',
+and continuous background review monitoring.
 """
 
 import logging
@@ -12,6 +13,7 @@ from database.db_manager import DatabaseManager
 from agent.orchestrator import ReviewIntelligenceAgent
 from agent.chat_agent import ReviewChatAgent
 from tools.comparator import ProductComparator
+from tools.monitor import ProductReviewMonitor
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
@@ -21,10 +23,11 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
 
-# Initialize Agent, Database, and Chat Agent
+# Initialize Agent, Database, Chat Agent, and Monitor
 db_manager = DatabaseManager()
 agent = ReviewIntelligenceAgent()
 chat_agent = ReviewChatAgent()
+monitor = ProductReviewMonitor(db_manager)
 
 
 # ============================================================
@@ -60,6 +63,34 @@ def home():
 
 
 # ============================================================
+# MONITORING TOGGLE & SCAN API ROUTE
+# ============================================================
+
+@app.route("/api/monitor/toggle", methods=["POST"])
+def api_toggle_monitor():
+    """Toggles active background review monitoring for a product."""
+    data = request.get_json() or {}
+    product_name = data.get("product", "").strip()
+    product_url = data.get("url", "").strip()
+
+    if not product_name:
+        return jsonify({"status": "error", "message": "Product name is required."}), 400
+
+    is_active = db_manager.toggle_monitoring(product_name, product_url)
+    if is_active:
+        # Trigger an immediate background scan
+        scan_res = monitor.scan_product_for_new_reviews(product_name)
+    else:
+        db_manager.log_activity(product_name, "MONITOR_PAUSED", f"Monitoring paused for '{product_name}'.")
+
+    return jsonify({
+        "status": "success",
+        "is_monitored": is_active,
+        "message": f"Review monitoring {'activated' if is_active else 'paused'} for {product_name}."
+    })
+
+
+# ============================================================
 # CONVERSATIONAL "ASK THE REVIEW AGENT" API ROUTE
 # ============================================================
 
@@ -67,7 +98,6 @@ def home():
 def api_chat():
     """
     Interactive Q&A API endpoint.
-    Accepts: { "question": "Why are battery complaints high?", "product": "Samsung Galaxy S25" }
     """
     data = request.get_json() or {}
     question = data.get("question", "").strip()
@@ -76,7 +106,6 @@ def api_chat():
     if not question:
         return jsonify({"status": "error", "message": "Question is required."}), 400
 
-    # Retrieve or generate product report
     report = db_manager.get_latest_report(product_name)
     if not report:
         report = agent.analyze_product(product_name)
@@ -95,9 +124,7 @@ def api_chat():
 
 @app.route("/compare", methods=["GET", "POST"])
 def compare():
-    """
-    Side-by-side product comparison interface.
-    """
+    """Side-by-side product comparison interface."""
     product_a = request.args.get("product_a") or request.form.get("product_a") or "Samsung Galaxy S25"
     product_b = request.args.get("product_b") or request.form.get("product_b") or "iPhone 16 Pro"
 
@@ -122,9 +149,7 @@ def compare():
 
 @app.route("/api/analyze", methods=["POST"])
 def api_analyze_product():
-    """
-    Programmatic JSON API endpoint for agent analysis.
-    """
+    """Programmatic JSON API endpoint for agent analysis."""
     data = request.get_json() or {}
     product_name = data.get("product", "").strip()
     sources = data.get("sources")
@@ -137,45 +162,6 @@ def api_analyze_product():
     db_manager.save_product_report(report)
 
     return jsonify({"status": "success", "report": report})
-
-
-# ============================================================
-# INDIVIDUAL REVIEW SUBMISSION (MANUAL INPUT)
-# ============================================================
-
-@app.route("/add-review", methods=["POST"])
-def add_customer_review():
-    """Handles single review submissions."""
-    product_name = request.form.get("product_name", "Unknown Product").strip()
-    review_text = request.form.get("review_text", "").strip()
-    rating = request.form.get("rating", "5")
-    source = request.form.get("source", "Manual Input").strip()
-
-    if not review_text:
-        return redirect(url_for("home", product=product_name))
-
-    try:
-        rating_int = int(rating)
-    except ValueError:
-        rating_int = 5
-
-    sentiment_res = agent.sentiment_analyzer.analyze_sentiment(review_text)
-    fake_res = agent.fake_detector.evaluate_review(review_text, rating_int)
-
-    db_manager.add_review(
-        product_name=product_name,
-        review_text=review_text,
-        rating=rating_int,
-        source=source,
-        sentiment=sentiment_res.get("sentiment", "neutral"),
-        is_fake=fake_res.get("is_suspicious", False),
-        fake_score=fake_res.get("suspicion_score", 0),
-        fake_reason="; ".join(fake_res.get("why_flagged", [])),
-        ai_explanation=sentiment_res.get("explanation", ""),
-        confidence_score=sentiment_res.get("confidence", 85)
-    )
-
-    return redirect(url_for("home", product=product_name))
 
 
 # ============================================================

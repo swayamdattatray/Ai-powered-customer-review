@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ReviewInsight AI — AI Customer Review Intelligence Agent</title>
+    <title>ReviewInsight AI — Multi-Store AI Review Intelligence Agent</title>
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -354,19 +354,18 @@
             text-decoration: none;
         }
 
-        .btn-primary-sm {
-            background: var(--primary-blue);
-            color: #ffffff;
-            border: none;
-            padding: 8px 16px;
+        .btn-monitor {
+            background: #f0fdf4;
+            color: var(--success);
+            border: 1px solid #bbf7d0;
+            padding: 8px 14px;
             border-radius: 10px;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 6px;
-            text-decoration: none;
         }
 
         /* ================= METRIC CARDS GRID ================= */
@@ -434,6 +433,115 @@
             font-weight: 600;
             line-height: 1.45;
             font-style: italic;
+        }
+
+        /* ================= 2-COLUMN SECTION: TRUST SCORE & MULTI-STORE PURCHASE ================= */
+        .trust-purchase-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+
+        .trust-score-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .trust-gauge-box {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 14px 0;
+        }
+
+        .trust-score-circle {
+            width: 70px;
+            height: 70px;
+            background: #ecfdf5;
+            border: 3px solid var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--success);
+            flex-shrink: 0;
+        }
+
+        .rating-compare-line {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            padding: 4px 0;
+            color: var(--text-muted);
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        /* Purchase Options Box */
+        .purchase-box-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .store-options-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .store-pill-card {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .store-pill-card:hover {
+            border-color: var(--primary-blue);
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+        }
+
+        .store-pill-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .store-badge-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin: 6px 0 10px;
+            line-height: 1.3;
+        }
+
+        .btn-store-buy {
+            background: var(--primary-blue);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            text-align: center;
+            display: block;
         }
 
         /* ================= 3-COLUMN ANALYTICS GRID ================= */
@@ -700,13 +808,19 @@
             flex-shrink: 0;
         }
 
-        /* ================= CHAT WIDGET ================= */
+        /* ================= LIVE MONITORING & CHAT SECTION ================= */
+        .monitoring-chat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
         .chat-widget-card {
             background: #ffffff;
             border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 22px;
-            margin-bottom: 24px;
         }
 
         .chat-input-row {
@@ -736,7 +850,7 @@
             display: none;
         }
 
-        /* ================= REVIEW INTELLIGENCE TABLE ================= */
+        /* Review Table */
         .review-table-card {
             background: #ffffff;
             border: 1px solid var(--border-color);
@@ -817,8 +931,8 @@
         </div>
 
         <div class="sidebar-footer-card">
-            <span>📊</span>
-            <p>Turn customer voices into actionable insights</p>
+            <span>🛡️</span>
+            <p>Real-time trust verification &amp; multi-store intelligence</p>
         </div>
     </aside>
 
@@ -828,8 +942,8 @@
         <!-- Top Header Headline -->
         <header class="top-header">
             <div class="top-headline">
-                <h1>AI-Powered <span>Customer Review Intelligence Agent</span></h1>
-                <p>Let AI investigate thousands of customer reviews and uncover deep product patterns.</p>
+                <h1>AI-Powered <span>Review Intelligence &amp; Trust Agent</span></h1>
+                <p>Paste product URLs or names to verify review authenticity, calculate real ratings, and find trusted stores.</p>
             </div>
             <div class="user-nav-actions">
                 <div class="user-profile">
@@ -839,20 +953,20 @@
             </div>
         </header>
 
-        <!-- Product Search & Analysis Action Form -->
+        <!-- Product URL / Search & Action Form -->
         <form class="search-action-card" method="POST" action="{{ url_for('home') }}">
             <div class="search-input-box">
-                <span>🔍</span>
+                <span>🔗</span>
                 <input 
                     type="text" 
                     name="product" 
-                    placeholder="Enter product name (e.g. iPhone 18 Pro Max, Samsung Galaxy S25, or URL)..." 
+                    placeholder="Paste product URL (Amazon, Flipkart, BestBuy) or product name (e.g. iPhone 18 Pro Max)..." 
                     value="{{ product_query }}" 
                     required
                 >
             </div>
             <select name="source" class="source-select">
-                <option value="auto" {% if source_filter == 'auto' %}selected{% endif %}>🌐 All Sources (Amazon + Flipkart)</option>
+                <option value="auto" {% if source_filter == 'auto' %}selected{% endif %}>🌐 All Retailers &amp; Stores</option>
                 <option value="amazon" {% if source_filter == 'amazon' %}selected{% endif %}>Amazon Reviews</option>
                 <option value="flipkart" {% if source_filter == 'flipkart' %}selected{% endif %}>Flipkart Reviews</option>
             </select>
@@ -863,17 +977,15 @@
 
         <!-- Agent Workflow Activity Stepper -->
         <div class="agent-stepper-bar">
-            <span class="step-pill">✓ Product Identified</span>
+            <span class="step-pill">✓ Product URL Resolved</span>
             <span>→</span>
-            <span class="step-pill">✓ Sources Processed</span>
+            <span class="step-pill">✓ Multi-Store Feeds Processed</span>
             <span>→</span>
-            <span class="step-pill">✓ Reviews Cleaned</span>
+            <span class="step-pill">✓ Real vs Fake Trust Scored</span>
             <span>→</span>
-            <span class="step-pill">✓ Clusters &amp; Patterns Detected</span>
+            <span class="step-pill">✓ Features &amp; Aspects Mined</span>
             <span>→</span>
-            <span class="step-pill">✓ Aspects Mined</span>
-            <span>→</span>
-            <span class="step-pill">✓ Report Generated</span>
+            <span class="step-pill">✓ Verified Stores Linked</span>
         </div>
 
         <!-- ================= PRODUCT HEADER CARD ================= -->
@@ -899,7 +1011,9 @@
                 </div>
             </div>
             <div class="product-actions">
-                <a href="#reviews-table" class="btn-outline">📄 Review Intelligence</a>
+                <button class="btn-monitor" id="monitor-btn" onclick="toggleMonitor('{{ report.product_name }}')">
+                    🔔 {% if report.monitoring_info.is_monitored %}Active Monitoring{% else %}Monitor Product{% endif %}
+                </button>
                 <a href="{{ url_for('compare', product_a=report.product_name) }}" class="btn-outline">📊 Compare</a>
                 <button class="btn-outline" onclick="window.print()">📥 Download Report</button>
             </div>
@@ -942,6 +1056,65 @@
             </div>
         </section>
 
+        <!-- ================= 2-COLUMN SECTION: TRUST SCORE & MULTI-STORE PURCHASE ================= -->
+        <section class="trust-purchase-grid">
+            
+            <!-- Trust & Authenticity Score Card -->
+            <div class="trust-score-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="font-size: 16px; font-weight: 800;">🛡️ Product Trust &amp; Real Rating</h3>
+                    <span class="badge-status" style="background: #ecfdf5; color: var(--success);">Grade {{ report.trust_grade }}</span>
+                </div>
+                
+                <div class="trust-gauge-box">
+                    <div class="trust-score-circle">
+                        {{ report.product_trust_score }}%
+                    </div>
+                    <div>
+                        <div style="font-size: 14px; font-weight: 800; color: var(--text-main);">{{ report.trust_verdict }}</div>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Authenticity confidence based on multi-signal verification.</p>
+                    </div>
+                </div>
+
+                <div style="background: #f8fafc; border-radius: 10px; padding: 10px;">
+                    <div class="rating-compare-line">
+                        <span>Claimed Platform Rating:</span>
+                        <strong>★ {{ report.claimed_rating }} / 5.0</strong>
+                    </div>
+                    <div class="rating-compare-line" style="border-bottom: none; color: var(--success); font-weight: 700;">
+                        <span>Adjusted "Real" Rating:</span>
+                        <strong>★ {{ report.adjusted_real_rating }} / 5.0</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Multi-Store Verified Purchase Box -->
+            <div class="purchase-box-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="font-size: 16px; font-weight: 800;">🛍️ Where to Buy Safely (Verified Stores)</h3>
+                    <span style="font-size: 12px; color: var(--text-muted);">Official &amp; Authorized Retailers</span>
+                </div>
+
+                <div class="store-options-grid">
+                    {% for store in report.purchase_options %}
+                    <div class="store-pill-card">
+                        <div>
+                            <div class="store-pill-header">
+                                <span>{{ store.icon }}</span>
+                                <span>{{ store.store_name }}</span>
+                            </div>
+                            <p class="store-badge-sub">{{ store.badge }}</p>
+                        </div>
+                        <a href="{{ store.buy_url }}" target="_blank" class="btn-store-buy">
+                            View on {{ store.store_name }} ↗
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </section>
+
         <!-- ================= 3-COLUMN ANALYTICS GRID ================= -->
         <section class="analytics-main-grid">
             <div class="analytics-card">
@@ -963,7 +1136,7 @@
             </div>
 
             <div class="analytics-card">
-                <div class="card-header-title">Aspect-Level Sentiment</div>
+                <div class="card-header-title">Key Feature Sentiment Matrix</div>
                 <div class="aspect-list">
                     {% for aspect_key, aspect_info in report.aspects.items() %}
                     <div class="aspect-bar-item">
@@ -980,7 +1153,7 @@
             <div class="analytics-card">
                 <div class="card-header-title">Common Topics &amp; Recurring Complaints</div>
                 <div class="topic-group-box liked">
-                    <div class="topic-group-title"><span>👍</span> Most Liked</div>
+                    <div class="topic-group-title"><span>👍</span> Most Liked Features</div>
                     <ul class="topic-items-list">
                         {% for item in report.most_liked %}
                         <li>{{ item }}</li>
@@ -1054,7 +1227,7 @@
             <div class="ai-insights-box">
                 <div class="insights-header">
                     <span>🎯</span>
-                    <span>Recommendations</span>
+                    <span>Strategic Recommendations</span>
                 </div>
                 <ul class="recommendations-list">
                     {% for rec in report.recommendations %}
@@ -1067,20 +1240,43 @@
             </div>
         </section>
 
-        <!-- ================= INTERACTIVE "ASK THE REVIEW AGENT" ================= -->
-        <section class="chat-widget-card">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span style="font-size: 20px;">💬</span>
-                <div>
-                    <h3 style="font-size: 16px; font-weight: 800;">Ask the Review Agent</h3>
-                    <p style="font-size: 12px; color: var(--text-muted);">Ask questions about {{ report.product_name }}'s reviews, complaints, or suspicious patterns.</p>
+        <!-- ================= LIVE MONITORING & CHAT SECTION ================= -->
+        <section class="monitoring-chat-grid">
+            
+            <!-- Live Review Monitor Feed -->
+            <div class="chat-widget-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 18px;">🔔</span>
+                        <h3 style="font-size: 16px; font-weight: 800;">Review Monitoring Stream</h3>
+                    </div>
+                    <span class="badge-status" style="background: #f1f5f9; color: #475569;">{{ report.monitoring_info.status_text }}</span>
+                </div>
+                <p style="font-size: 12px; color: var(--text-muted); margin: 6px 0 12px;">Background agent polling activity log:</p>
+                <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px;">
+                    {% for act in report.monitoring_info.recent_activity %}
+                    <div style="background: #f8fafc; padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--primary-blue);">
+                        <div style="font-weight: 700; color: #334155;">{{ act.event_type }} · <span style="font-weight: normal; color: var(--text-muted);">{{ act.created_at }}</span></div>
+                        <div style="color: #475569; margin-top: 2px;">{{ act.details }}</div>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
-            <div class="chat-input-row">
-                <input type="text" id="chat-query" placeholder="e.g. Why are battery complaints high? Show me suspicious reviews...">
-                <button type="button" class="btn-analyze" onclick="askAgent()">Ask Agent →</button>
+
+            <!-- Ask the Review Agent -->
+            <div class="chat-widget-card">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 18px;">💬</span>
+                    <h3 style="font-size: 16px; font-weight: 800;">Ask the Review Agent</h3>
+                </div>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Ask questions about {{ report.product_name }}'s reviews or trusted stores.</p>
+                <div class="chat-input-row">
+                    <input type="text" id="chat-query" placeholder="e.g. Is this product safe to buy? Why are battery complaints high?">
+                    <button type="button" class="btn-analyze" onclick="askAgent()">Ask →</button>
+                </div>
+                <div id="chat-output" class="chat-output-box"></div>
             </div>
-            <div id="chat-output" class="chat-output-box"></div>
+
         </section>
 
         <!-- ================= REVIEW INTELLIGENCE TABLE ================= -->
@@ -1147,6 +1343,29 @@
                 output.innerHTML = `<strong>Review Agent:</strong><br>${data.answer.replace(/\n/g, '<br>')}`;
             } catch (err) {
                 output.innerHTML = '<strong>Error:</strong> Could not retrieve answer from agent.';
+            }
+        }
+
+        async function toggleMonitor(productName) {
+            const btn = document.getElementById('monitor-btn');
+            try {
+                const res = await fetch('/api/monitor/toggle', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ product: productName })
+                });
+                const data = await res.json();
+                if (data.is_monitored) {
+                    btn.innerHTML = '🔔 Active Monitoring';
+                    btn.style.color = '#16a34a';
+                    alert(`✓ Monitoring activated for ${productName}. The agent will continuously scan for newly posted reviews.`);
+                } else {
+                    btn.innerHTML = '🔔 Monitor Product';
+                    btn.style.color = '#64748b';
+                    alert(`Monitoring paused for ${productName}.`);
+                }
+            } catch (err) {
+                alert('Error updating monitor status.');
             }
         }
     </script>

@@ -1,18 +1,7 @@
 """
 Multi-Signal Fake & Suspicious Review Detector Tool.
-Evaluates review authenticity using multi-dimensional signals:
-1. Lexical repetition and generic praise/criticism
-2. Lack of product-specific feature details
-3. Rating vs sentiment contradictions
-4. Punctuation/capitalization anomalies
-5. Text length anomalies and repetitive sentence structures
-
-Generates concise, human-readable "Why Flagged?" evidence items.
-Adheres strictly to safe risk-rating terminology:
-- "High Suspicion" (Score >= 70)
-- "Medium Suspicion" (Score 40-69)
-- "Low Suspicion" (Score 15-39)
-- "Appears Authentic" (Score < 15)
+Enhanced with Product-Level Trust Index (0-100%) and Adjusted "Real" Customer Rating.
+Calculates what the customer rating actually is after filtering out suspicious reviews.
 """
 
 import re
@@ -37,18 +26,13 @@ class FakeReviewDetector:
         rating: Optional[int] = None,
         all_review_texts: Optional[List[str]] = None
     ) -> Dict[str, Any]:
-        """
-        Calculates a suspicion score (0-100) using multiple observable evidence signals.
-        
-        Returns:
-            Dict with 'suspicion_score', 'risk_status', 'is_suspicious', and 'why_flagged' list.
-        """
+        """Calculates a suspicion score (0-100) using multiple observable evidence signals."""
         text = str(review_text).strip()
         lower_text = text.lower()
         score = 8
         evidence_signals = []
 
-        # Signal 1: Extremely short review with extreme rating (5-star or 1-star)
+        # Signal 1: Extremely short review with extreme rating
         words = text.split()
         if len(words) <= 5 and (rating == 5 or rating == 1):
             score += 35
@@ -66,7 +50,7 @@ class FakeReviewDetector:
             score += 30 * len(matched_hype)
             evidence_signals.append("High density of generic promotional phrasing without specific usage details")
 
-        # Signal 3: Lack of product-specific technical keywords (camera, battery, speed, screen, etc.)
+        # Signal 3: Lack of product-specific technical keywords
         feature_keywords = ["camera", "battery", "screen", "display", "charge", "speed", "sound", "speaker", "build", "price", "software", "ram", "processor"]
         has_features = any(k in lower_text for k in feature_keywords)
         if len(words) > 10 and not has_features:
@@ -98,7 +82,6 @@ class FakeReviewDetector:
 
         final_score = min(100, max(0, score))
 
-        # Assign calibrated safe status
         if final_score >= 70:
             risk_status = "High Suspicion"
             is_suspicious = True
@@ -133,21 +116,22 @@ class FakeReviewDetector:
 
     def evaluate_batch(self, reviews: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
-        Evaluates an entire collection of reviews and calculates risk distributions.
-        
-        Returns:
-            Dict containing:
-            - 'total_reviewed': int
-            - 'suspicious_count': int
-            - 'suspicious_percentage': int
-            - 'risk_breakdown': {'high': int, 'medium': int, 'low': int, 'authentic': int}
-            - 'flagged_reviews': List[Dict] with 'why_flagged' evidence
+        Evaluates an entire collection of reviews and calculates:
+        1. Risk distributions
+        2. Overall Product Trust Index (0-100%)
+        3. Real vs Filtered Rating (true rating excluding fake reviews)
         """
         if not reviews:
             return {
                 "total_reviewed": 0,
                 "suspicious_count": 0,
                 "suspicious_percentage": 0,
+                "product_trust_score": 100,
+                "trust_grade": "A",
+                "claimed_rating": 4.5,
+                "adjusted_real_rating": 4.5,
+                "rating_difference": 0.0,
+                "trust_verdict": "High Trust · Authentic Feedback",
                 "risk_breakdown": {"high": 0, "medium": 0, "low": 0, "authentic": 0},
                 "flagged_reviews": []
             }
@@ -156,13 +140,18 @@ class FakeReviewDetector:
         flagged = []
         risk_breakdown = {"high": 0, "medium": 0, "low": 0, "authentic": 0}
         suspicious_count = 0
+        total_rating_all = 0
+        total_rating_trusted = 0
+        trusted_count = 0
 
         for r in reviews:
             text = r.get("review_text", "")
-            rating = r.get("rating")
-            eval_res = self.evaluate_multi_signals(text, rating, all_texts)
+            rating = r.get("rating", 4)
+            total_rating_all += rating
 
+            eval_res = self.evaluate_multi_signals(text, rating, all_texts)
             status = eval_res["risk_status"]
+
             if status == "High Suspicion":
                 risk_breakdown["high"] += 1
                 suspicious_count += 1
@@ -171,8 +160,12 @@ class FakeReviewDetector:
                 suspicious_count += 1
             elif status == "Low Suspicion":
                 risk_breakdown["low"] += 1
+                total_rating_trusted += rating
+                trusted_count += 1
             else:
                 risk_breakdown["authentic"] += 1
+                total_rating_trusted += rating
+                trusted_count += 1
 
             if eval_res["is_suspicious"]:
                 flagged.append({
@@ -188,10 +181,38 @@ class FakeReviewDetector:
         total = len(reviews)
         suspicious_pct = round((suspicious_count / total) * 100) if total > 0 else 0
 
+        # Product Trust Score: 100 minus the suspicious impact
+        product_trust_score = max(10, 100 - (suspicious_pct * 2))
+
+        # Trust Grade & Verdict
+        if product_trust_score >= 85:
+            trust_grade = "A+"
+            trust_verdict = "Highly Authentic & Trusted Reviews"
+        elif product_trust_score >= 70:
+            trust_grade = "A"
+            trust_verdict = "Mostly Authentic · Low Risk"
+        elif product_trust_score >= 50:
+            trust_grade = "B"
+            trust_verdict = "Moderate Suspicion · Review with Caution"
+        else:
+            trust_grade = "C"
+            trust_verdict = "High Manipulation Risk · Multiple Flagged Reviews"
+
+        # Claimed vs Adjusted Real Rating
+        claimed_rating = round(total_rating_all / total, 1) if total > 0 else 4.0
+        adjusted_real_rating = round(total_rating_trusted / trusted_count, 1) if trusted_count > 0 else claimed_rating
+        rating_diff = round(claimed_rating - adjusted_real_rating, 1)
+
         return {
             "total_reviewed": total,
             "suspicious_count": suspicious_count,
             "suspicious_percentage": suspicious_pct,
+            "product_trust_score": product_trust_score,
+            "trust_grade": trust_grade,
+            "claimed_rating": claimed_rating,
+            "adjusted_real_rating": adjusted_real_rating,
+            "rating_difference": rating_diff,
+            "trust_verdict": trust_verdict,
             "risk_breakdown": risk_breakdown,
             "flagged_reviews": flagged
         }
