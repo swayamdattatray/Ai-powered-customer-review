@@ -10,3 +10,7 @@ customer_reviews.db
 !.env.example
 .pytest_cache/
 .vscode/
+node_modules/
+extension/node_modules/
+.DS_Store
+Thumbs.db

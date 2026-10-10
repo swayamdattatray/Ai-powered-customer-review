@@ -1,440 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Product Analytics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Analytics | Customer Review Intelligence</title>
 
     <style>
-
-        * {
-            box-sizing: border-box;
-        }
-
+        * { box-sizing: border-box; }
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: #719fe2;
-            color: #222;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #102a56;
         }
-
-        /* =========================
-           HEADER
-        ========================= */
-
         .header {
-            background: #5ed2dd;
+            background: white;
+            border-bottom: 1px solid #e1e6ef;
+            padding: 20px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .logo {
+            width: 48px;
+            height: 48px;
+            background: #2864e8;
             color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: 30px;
-        }
-
-        .header p {
-            margin-top: 10px;
-            font-size: 16px;
-        }
-
-        /* =========================
-           CONTAINER
-        ========================= */
-
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 25px auto 50px auto;
-        }
-
-        /* =========================
-           BACK BUTTON
-        ========================= */
-
-        .navigation {
-            margin-bottom: 20px;
-        }
-
-        .back-button {
-            display: inline-block;
-            background: #1f4e79;
-            color: white;
-            padding: 13px 22px;
-            border-radius: 7px;
-            text-decoration: none;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
             font-weight: bold;
         }
-
-        .back-button:hover {
-            background: #163a5c;
+        .brand h1 { margin: 0; font-size: 24px; }
+        .brand p { margin: 5px 0 0; color: #60708f; font-size: 15px; }
+        .back-button {
+            text-decoration: none;
+            background: white;
+            border: 1px solid #d7dfec;
+            color: #0759d7;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background 0.2s;
         }
+        .back-button:hover { background: #f3f7ff; }
 
-        /* =========================
-           MAIN CARD
-        ========================= */
-
+        .container {
+            max-width: 1300px;
+            margin: 30px auto 50px;
+            padding: 0 32px;
+        }
         .section-card {
             background: white;
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+            border: 1px solid #dce4f0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
+        .section-title { margin-top: 0; font-size: 26px; }
+        .section-description { color: #60708f; margin-bottom: 25px; }
 
-        .section-title {
-            text-align: center;
-            margin-top: 0;
-            font-size: 26px;
+        .product-card {
+            margin-top: 20px;
+            padding: 24px;
+            background: #fafcff;
+            border-radius: 10px;
+            border: 1px solid #e1eaf5;
+            border-left: 5px solid #2864e8;
         }
-
-        .section-description {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #555;
+        .product-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
         }
-
-        /* =========================
-           SUMMARY
-        ========================= */
-
+        .product-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #102a56;
+            margin: 0;
+        }
+        .rating-badge {
+            background: #fff8e6;
+            border: 1px solid #ffe299;
+            color: #b37400;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+            gap: 12px;
+            margin-bottom: 16px;
         }
-
-        .summary-card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
-        }
-
-        .summary-card h3 {
-            margin: 0;
-            font-size: 30px;
-        }
-
-        .summary-card p {
-            margin-bottom: 0;
-        }
-
-        .positive {
-            color: #198754;
-        }
-
-        .neutral {
-            color: #f0ad4e;
-        }
-
-        .negative {
-            color: #dc3545;
-        }
-
-        /* =========================
-           PRODUCT CARD
-        ========================= */
-
-        .product-card {
-            margin-top: 25px;
-            padding: 25px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border-left: 5px solid #1f4e79;
-        }
-
-        .product-card h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            color: #1f4e79;
-            font-size: 21px;
-        }
-
-        .product-total {
-            font-weight: bold;
-            margin-bottom: 18px;
-        }
-
-        /* =========================
-           PRODUCT SENTIMENT CARDS
-        ========================= */
-
         .sentiment-card {
             background: white;
-            padding: 20px;
+            padding: 16px;
             border-radius: 8px;
+            border: 1px solid #e1e6ef;
             text-align: center;
-            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
         }
+        .sentiment-card h4 { margin: 0; font-size: 24px; }
+        .sentiment-card p { margin: 4px 0 0; font-size: 13px; color: #60708f; }
+        .positive h4 { color: #18a54a; }
+        .neutral h4 { color: #ed9b00; }
+        .negative h4 { color: #ed2c2c; }
 
-        .sentiment-card h4 {
-            margin: 0;
-            font-size: 28px;
+        .aspect-pills-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
         }
-
-        .sentiment-card p {
-            margin-bottom: 0;
-            margin-top: 8px;
+        .aspect-pill {
+            background: #f0f4fa;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
-
-        /* =========================
-           EMPTY MESSAGE
-        ========================= */
+        .view-product-btn {
+            display: inline-block;
+            margin-top: 14px;
+            text-decoration: none;
+            color: #2864e8;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .view-product-btn:hover { text-decoration: underline; }
 
         .empty-message {
             text-align: center;
-            color: #666;
-            padding: 30px;
+            color: #60708f;
+            padding: 40px;
         }
-
-        /* =========================
-           FOOTER
-        ========================= */
-
         .footer {
             text-align: center;
             margin-top: 40px;
-            padding: 20px;
-            color: #777;
+            color: #71809a;
             font-size: 14px;
         }
-
-        /* =========================
-           RESPONSIVE
-        ========================= */
-
-        @media (max-width: 900px) {
-
-            .summary-grid {
-                grid-template-columns: 1fr;
-            }
-
-        }
-
-        @media (max-width: 600px) {
-
-            .container {
-                width: 94%;
-            }
-
-            .header h1 {
-                font-size: 23px;
-            }
-
-            .section-card {
-                padding: 20px;
-            }
-
-            .product-card {
-                padding: 18px;
-            }
-
-        }
-
     </style>
-
 </head>
-
 
 <body>
 
-
-<!-- =========================
-     HEADER
-========================= -->
-
-<div class="header">
-
-    <h1>
-        Product-wise Analytics
-    </h1>
-
-    <p>
-        Customer sentiment analysis by product
-    </p>
-
-</div>
-
+<header class="header">
+    <div class="brand">
+        <div class="logo">AI</div>
+        <div>
+            <h1>Customer Review Intelligence</h1>
+            <p>Product-wise Intelligence &amp; Sentiment Portfolio</p>
+        </div>
+    </div>
+    <a href="{{ url_for('index') }}" class="back-button">
+        ← Back to Dashboard
+    </a>
+</header>
 
 <div class="container">
-
-
-    <!-- =========================
-         BACK TO DASHBOARD
-    ========================= -->
-
-    <div class="navigation">
-
-        <a href="{{ url_for('home') }}"
-           class="back-button">
-
-            ← Back to Dashboard
-
-        </a>
-
-    </div>
-
-
-    <!-- =========================
-         PRODUCT ANALYTICS
-    ========================= -->
-
     <div class="section-card">
-
-        <h2 class="section-title">
-
-            Product Analytics
-
-        </h2>
-
-
+        <h2 class="section-title">Product Intelligence Analytics</h2>
         <p class="section-description">
-
-            Sentiment distribution for each product
-            based on customer reviews.
-
+            Aggregated sentiment, e-commerce rating performance, and aspect breakdown per product.
         </p>
 
-
-        {% if product_analytics %}
-
-
-            {% for product, data in product_analytics.items() %}
-
-
-                <div class="product-card">
-
-
-                    <!-- PRODUCT NAME -->
-
-                    <h3>
-
-                        {{ product }}
-
-                    </h3>
-
-
-                    <!-- TOTAL REVIEWS -->
-
-                    <p class="product-total">
-
-                        Total Reviews:
-                        {{ data.total }}
-
-                    </p>
-
-
-                    <!-- SENTIMENT -->
-
-                    <div class="summary-grid">
-
-
-                        <!-- POSITIVE -->
-
-                        <div class="sentiment-card positive">
-
-                            <h4>
-
-                                {{ data.positive }}
-
-                            </h4>
-
-                            <p>
-
-                                Positive
-
-                            </p>
-
-                        </div>
-
-
-                        <!-- NEUTRAL -->
-
-                        <div class="sentiment-card neutral">
-
-                            <h4>
-
-                                {{ data.neutral }}
-
-                            </h4>
-
-                            <p>
-
-                                Neutral
-
-                            </p>
-
-                        </div>
-
-
-                        <!-- NEGATIVE -->
-
-                        <div class="sentiment-card negative">
-
-                            <h4>
-
-                                {{ data.negative }}
-
-                            </h4>
-
-                            <p>
-
-                                Negative
-
-                            </p>
-
-                        </div>
-
-
-                    </div>
-
-
+        {% if products %}
+            {% for item in products %}
+            <div class="product-card">
+                <div class="product-card-header">
+                    <h3 class="product-name">{{ item.product_name }}</h3>
+                    <span class="rating-badge">
+                        ⭐ {{ item.average_rating }} / 5 ({{ item.total_reviews }} reviews)
+                    </span>
                 </div>
 
+                <div class="summary-grid">
+                    <div class="sentiment-card positive">
+                        <h4>{{ item.positive }}</h4>
+                        <p>Positive Reviews</p>
+                    </div>
+                    <div class="sentiment-card neutral">
+                        <h4>{{ item.neutral }}</h4>
+                        <p>Neutral Reviews</p>
+                    </div>
+                    <div class="sentiment-card negative">
+                        <h4>{{ item.negative }}</h4>
+                        <p>Negative Reviews</p>
+                    </div>
+                </div>
 
+                {% if item.explanation %}
+                <div style="font-size: 13px; color: #334d7a; background: #f8fbff; padding: 10px 14px; border-radius: 6px; margin-top: 10px;">
+                    <strong>AI Analysis:</strong> "{{ item.explanation }}"
+                </div>
+                {% endif %}
+
+                {% if item.aspects %}
+                <div class="aspect-pills-row">
+                    {% for asp_key, asp in item.aspects.items() %}
+                    <span class="aspect-pill">
+                        {{ asp.icon }} <strong>{{ asp.name }}:</strong> {{ asp.score }}/5
+                    </span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div>
+                    <a href="{{ url_for('index', product=item.product_name) }}" class="view-product-btn">
+                        🔍 Open {{ item.product_name }} in Dashboard →
+                    </a>
+                </div>
+            </div>
             {% endfor %}
-
-
         {% else %}
-
-
             <p class="empty-message">
-
-                No product reviews are available yet.
-
-                Add customer reviews from the dashboard
-                to see product analytics here.
-
+                No product reviews are available yet. Add customer reviews or analyze a product URL from the dashboard.
             </p>
-
-
         {% endif %}
-
-
     </div>
-
-
-    <!-- =========================
-         FOOTER
-    ========================= -->
 
     <div class="footer">
-
         AI-Powered Customer Review Intelligence Platform
-
     </div>
-
-
 </div>
 
-
 </body>
-
 </html>

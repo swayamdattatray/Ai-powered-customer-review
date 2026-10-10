@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} - E-Commerce Intelligence Analysis</title>
+
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #102a56;
+        }
+        .header {
+            background: white;
+            border-bottom: 1px solid #e1e6ef;
+            padding: 20px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .logo {
+            width: 48px;
+            height: 48px;
+            background: #2864e8;
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .brand h1 { margin: 0; font-size: 24px; }
+        .brand p { margin: 5px 0 0; color: #60708f; font-size: 15px; }
+
+        .back-button {
+            text-decoration: none;
+            background: white;
+            border: 1px solid #d7dfec;
+            color: #0759d7;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+        .back-button:hover { background: #f3f7ff; }
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+            padding: 30px 32px 50px;
+        }
+        .page-title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .page-title h2 { margin: 0; font-size: 32px; color: #102a56; }
+        .page-title p { margin-top: 8px; color: #60708f; font-size: 16px; }
+
+        .card {
+            background: white;
+            border: 1px solid #dce4f0;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 7px rgba(20, 40, 80, 0.04);
+        }
+        .card h3 {
+            margin: 0 0 14px;
+            font-size: 20px;
+            color: #102a56;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .product-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #102a56;
+            margin: 8px 0 12px;
+        }
+        .url-box {
+            background: #f8fbff;
+            border: 1px solid #e1eaf5;
+            padding: 12px 16px;
+            border-radius: 8px;
+            word-break: break-all;
+            font-size: 13px;
+            color: #334d7a;
+            margin-bottom: 14px;
+        }
+
+        /* Review Statistics Grid */
+        .stats-tri-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 16px 0;
+        }
+        .stat-tri-card {
+            background: #f8fbff;
+            border: 1px solid #dce8fa;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+        .stat-tri-val {
+            font-size: 28px;
+            font-weight: bold;
+            color: #102a56;
+        }
+        .stat-tri-label {
+            font-size: 13px;
+            color: #60708f;
+            margin-top: 4px;
+            font-weight: bold;
+        }
+
+        .limitation-box {
+            background: #fff8e6;
+            border: 1px solid #ffe299;
+            color: #8c6000;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .source-tag {
+            display: inline-block;
+            background: #ffebd3;
+            color: #b35900;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        /* Rating & AI Grid */
+        .intelligence-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .rating-hero-display {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 14px 0 18px;
+            border-bottom: 1px solid #edf1f7;
+            margin-bottom: 16px;
+        }
+
+        .rating-big-num {
+            font-size: 44px;
+            font-weight: bold;
+            color: #102a56;
+            line-height: 1;
+        }
+        .rating-big-stars {
+            color: #f4a000;
+            font-size: 20px;
+            margin: 6px 0 4px;
+            letter-spacing: 2px;
+        }
+
+        .star-dist-list {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .star-dist-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+        .star-dist-label { width: 50px; font-weight: bold; color: #4a5d78; }
+        .star-dist-track { flex: 1; height: 9px; background: #edf1f7; border-radius: 4px; overflow: hidden; }
+        .star-dist-fill { height: 100%; background: #f4a000; border-radius: 4px; }
+        .star-dist-pct { width: 45px; text-align: right; font-weight: bold; color: #334d7a; }
+
+        .ai-explanation-box {
+            background: #f8fbff;
+            border: 1px solid #d5e5fb;
+            border-radius: 10px;
+            padding: 18px;
+            margin-top: 14px;
+        }
+        .ai-explanation-title {
+            font-weight: bold;
+            font-size: 14px;
+            color: #1a51b8;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ai-explanation-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #334d7a;
+            margin: 0;
+        }
+
+        /* Aspects Grid */
+        .aspect-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 14px;
+        }
+        .aspect-card {
+            background: #fafcff;
+            border: 1px solid #e1eaf5;
+            border-radius: 10px;
+            padding: 16px;
+            cursor: pointer;
+            transition: transform 0.15s, border-color 0.15s;
+        }
+        .aspect-card:hover {
+            transform: translateY(-2px);
+            border-color: #2864e8;
+        }
+        .aspect-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .aspect-card-title {
+            font-weight: bold;
+            font-size: 15px;
+            color: #102a56;
+        }
+        .aspect-card-score {
+            font-weight: bold;
+            font-size: 14px;
+            color: #f4a000;
+        }
+        .aspect-meter {
+            display: flex;
+            height: 7px;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #edf1f7;
+            margin: 8px 0;
+        }
+        .aspect-meter-pos { background: #18a54a; height: 100%; }
+        .aspect-meter-neu { background: #ed9b00; height: 100%; }
+        .aspect-meter-neg { background: #ed2c2c; height: 100%; }
+        .aspect-meter-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #60708f;
+        }
+
+        /* Suspicion Tiers */
+        .tiers-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .tier-pill {
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 13px;
+        }
+        .tier-high { background: #ffeded; border: 1px solid #ffc8c8; color: #b52222; }
+        .tier-med { background: #fff5df; border: 1px solid #ffeeba; color: #8c6000; }
+        .tier-low { background: #eaf8ef; border: 1px solid #c3e6cb; color: #127a34; }
+
+        .suspicious-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 20px;
+        }
+        .suspicious-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .suspicious-table th {
+            text-align: left;
+            padding: 8px 10px;
+            background: #f0f4fa;
+            color: #4a5d78;
+        }
+        .suspicious-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #edf1f7;
+        }
+
+        .suspicious-card {
+            background: #fffafa;
+            border: 1px solid #ffdede;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+        .cluster-card {
+            background: #fffdf5;
+            border: 1px solid #fce8ad;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+
+        /* Review Item */
+        .review-item {
+            border: 1px solid #e1e6ef;
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 12px;
+            background: #fafcff;
+        }
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .sentiment-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .sentiment-positive { background: #eaf8ef; color: #18a54a; }
+        .sentiment-negative { background: #ffeded; color: #ed2c2c; }
+        .sentiment-neutral { background: #fff5df; color: #ed9b00; }
+
+        .aspect-tag {
+            display: inline-block;
+            background: #f0f4fa;
+            color: #334d7a;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 4px;
+            margin-top: 4px;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(16, 42, 86, 0.5);
+            display: none;
+            align-items: center; justify-content: center;
+            z-index: 1000; padding: 20px;
+        }
+        .modal-card {
+            background: white;
+            border-radius: 14px;
+            max-width: 680px; width: 100%;
+            max-height: 85vh; overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 28px; position: relative;
+        }
+        .modal-close {
+            position: absolute; top: 20px; right: 20px;
+            background: #f0f4fa; border: none;
+            width: 32px; height: 32px; border-radius: 50%;
+            cursor: pointer; font-size: 16px;
+        }
+
+        /* Price Comparison Styles */
+        .price-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .price-stat-card {
+            background: #f8fbff;
+            border: 1px solid #dce8fa;
+            border-radius: 8px;
+            padding: 14px 18px;
+            text-align: left;
+        }
+        .price-stat-val {
+            font-size: 22px;
+            font-weight: bold;
+            color: #102a56;
+            margin-top: 4px;
+        }
+        .price-stat-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #60708f;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .price-chart-card {
+            background: #ffffff;
+            border: 1px solid #edf1f7;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .price-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .price-bar-row:last-child { margin-bottom: 0; }
+        .price-bar-label {
+            width: 110px;
+            font-weight: bold;
+            color: #102a56;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .price-bar-track {
+            flex: 1;
+            height: 32px;
+            background: #f0f4fa;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+        .price-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2864e8, #4f87ff);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 12px;
+            color: white;
+            font-weight: bold;
+            font-size: 13px;
+            min-width: 60px;
+            transition: width 0.5s ease-in-out;
+        }
+        .price-bar-fill.lowest {
+            background: linear-gradient(90deg, #18a54a, #34d399);
+        }
+        .price-bar-val {
+            width: 110px;
+            text-align: right;
+            font-size: 16px;
+            font-weight: bold;
+            color: #102a56;
+        }
+        .price-sources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+            margin-top: 16px;
+        }
+        .price-source-card {
+            background: #fafcff;
+            border: 1px solid #e1eaf5;
+            border-radius: 8px;
+            padding: 14px 16px;
+        }
+        .price-badge-success {
+            background: #eaf8ef;
+            color: #127a34;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .price-badge-unavailable {
+            background: #fff8e6;
+            color: #8c6000;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        @media (max-width: 1000px) {
+            .intelligence-grid, .suspicious-grid, .stats-tri-grid, .price-summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="brand">
+        <div class="logo">AI</div>
+        <div>
+            <h1>Customer Review Intelligence</h1>
+            <p>E-Commerce URL Intelligence &amp; Aspect Analysis</p>
+        </div>
+    </div>
+    <a href="{{ url_for('index') }}" class="back-button">
+        ← Back to Dashboard
+    </a>
+</header>
+
+<main class="container">
+
+    <div class="page-title">
+        <h2>Product URL Intelligence Analysis</h2>
+        <p>Comprehensive review collection, canonical rating breakdown, and dynamic aspect synthesis.</p>
+    </div>
+
+    {% if error %}
+    <div style="background: #ffeded; color: #842029; padding: 16px; border-radius: 8px; margin-bottom: 25px;">
+        ⚠️ {{ error }}
+    </div>
+    {% else %}
+
+    <!-- 1. Product Information & Review Collection Pipeline Stats -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <h3>📦 Product Overview</h3>
+            <span class="source-tag">Source: {{ source_name }}</span>
+        </div>
+        
+        <div class="product-name">{{ product.name }}</div>
+        <div class="url-box"><strong>URL:</strong> {{ product_url }}</div>
+
+        <!-- Distinct Review Counts: Available vs. Collected vs. Analyzed -->
+        <div class="stats-tri-grid">
+            <div class="stat-tri-card">
+                <div class="stat-tri-val">{{ review_statistics.available }}</div>
+                <div class="stat-tri-label">Reviews Available</div>
+            </div>
+            <div class="stat-tri-card">
+                <div class="stat-tri-val" style="color: #2864e8;">{{ review_statistics.collected }}</div>
+                <div class="stat-tri-label">Reviews Collected</div>
+            </div>
+            <div class="stat-tri-card">
+                <div class="stat-tri-val" style="color: #18a54a;">{{ review_statistics.analyzed }}</div>
+                <div class="stat-tri-label">Reviews Analyzed (100%)</div>
+            </div>
+        </div>
+
+        {% if review_statistics.limitation_reason %}
+        <div class="limitation-box">
+            <span>ℹ️</span>
+            <span><strong>Collection Notice:</strong> {{ review_statistics.limitation_reason }}</span>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- 2. E-Commerce Price Comparison (API-First Modular Architecture) -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 6px;">
+            <h3>🏷️ E-Commerce Price Comparison</h3>
+            <span style="font-size: 13px; color: #2864e8; font-weight: bold;">
+                API-First Cross-Platform Intelligence
+            </span>
+        </div>
+        <p style="color: #60708f; font-size: 13px; margin: 0 0 18px;">
+            Live price verification across supported platforms using official authorized APIs. No synthetic or scraped price estimates.
+        </p>
+
+        {% if price_comparison and price_comparison.summary.has_comparison %}
+        <!-- Price Metrics Summary -->
+        <div class="price-summary-grid">
+            <div class="price-stat-card">
+                <div class="price-stat-label">Lowest Price</div>
+                <div class="price-stat-val" style="color: #18a54a;">{{ price_comparison.summary.lowest_price_formatted }}</div>
+                <div style="font-size: 11px; color: #60708f; margin-top: 2px;">at {{ price_comparison.summary.lowest_source }}</div>
+            </div>
+            <div class="price-stat-card">
+                <div class="price-stat-label">Highest Price</div>
+                <div class="price-stat-val" style="color: #102a56;">{{ price_comparison.summary.highest_price_formatted }}</div>
+                <div style="font-size: 11px; color: #60708f; margin-top: 2px;">at {{ price_comparison.summary.highest_source }}</div>
+            </div>
+            <div class="price-stat-card">
+                <div class="price-stat-label">Price Difference</div>
+                <div class="price-stat-val" style="color: #2864e8;">
+                    {% if price_comparison.summary.sources_compared > 1 %}
+                        {{ price_comparison.summary.price_difference_formatted }}
+                    {% else %}
+                        N/A (1 Source)
+                    {% endif %}
+                </div>
+                <div style="font-size: 11px; color: #60708f; margin-top: 2px;">Potential savings</div>
+            </div>
+            <div class="price-stat-card">
+                <div class="price-stat-label">Sources Compared</div>
+                <div class="price-stat-val">{{ price_comparison.summary.sources_compared }}</div>
+                <div style="font-size: 11px; color: #60708f; margin-top: 2px;">of {{ price_comparison.summary.total_sources_checked }} supported</div>
+            </div>
+        </div>
+
+        <!-- Price Comparison Bar Graph -->
+        <div class="price-chart-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h4 style="margin: 0; font-size: 14px; color: #102a56;">📊 Current Market Prices by Source</h4>
+                <span style="font-size: 12px; color: #71809a;">Updated: {{ price_comparison.summary.last_updated }}</span>
+            </div>
+
+            {% for item in price_comparison.valid_prices %}
+            <div class="price-bar-row">
+                <div class="price-bar-label">
+                    <span>{{ item.source }}</span>
+                    {% if item.source == price_comparison.summary.lowest_source and price_comparison.summary.sources_compared > 1 %}
+                    <span style="background: #eaf8ef; color: #127a34; font-size: 10px; padding: 1px 5px; border-radius: 3px;">Best</span>
+                    {% endif %}
+                </div>
+                <div class="price-bar-track">
+                    {% set max_p = price_comparison.chart_data.max_value %}
+                    {% set pct = (item.price / max_p * 100)|round(1) if max_p > 0 else 100 %}
+                    <div class="price-bar-fill {% if item.source == price_comparison.summary.lowest_source %}lowest{% endif %}" style="width: {{ pct }}%;">
+                        {{ item.formatted_price }}
+                    </div>
+                </div>
+                <div class="price-bar-val">
+                    {{ item.formatted_price }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <!-- Notice when no APIs returned live prices -->
+        <div style="background: #f8fbff; border: 1px solid #dce8fa; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 18px;">
+            <div style="font-size: 24px; margin-bottom: 6px;">🏷️</div>
+            <div style="font-weight: bold; font-size: 15px; color: #102a56; margin-bottom: 4px;">Live Price Comparison Notice</div>
+            <div style="font-size: 13px; color: #60708f; max-width: 650px; margin: auto;">
+                Official e-commerce APIs require authorized credentials (e.g. Amazon PA-API 5.0 and Flipkart Affiliate Token). 
+                In compliance with strict data integrity guidelines, fake or estimated placeholder prices are never generated.
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Platform Source Status Cards -->
+        <div style="font-size: 13px; font-weight: bold; color: #102a56; margin-top: 10px; margin-bottom: 4px;">
+            Supported E-Commerce Sources Status:
+        </div>
+        <div class="price-sources-grid">
+            {% if price_comparison and price_comparison.prices %}
+                {% for item in price_comparison.prices %}
+                <div class="price-source-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong style="color: #102a56; font-size: 15px;">{{ item.source }}</strong>
+                        {% if item.status == 'success' and item.price %}
+                        <span class="price-badge-success">✓ Price Fetched</span>
+                        {% else %}
+                        <span class="price-badge-unavailable">Price Unavailable</span>
+                        {% endif %}
+                    </div>
+
+                    {% if item.status == 'success' and item.price %}
+                    <div style="font-size: 20px; font-weight: bold; color: #102a56; margin: 4px 0;">
+                        {{ item.formatted_price }}
+                    </div>
+                    <div style="font-size: 12px; color: #60708f;">
+                        {% if item.availability %}<span style="color: #18a54a;">● In Stock</span>{% else %}<span style="color: #ed2c2c;">● Out of Stock</span>{% endif %}
+                        • Match: {{ item.match_confidence|title }}
+                    </div>
+                    {% else %}
+                    <div style="font-size: 12px; color: #8c6000; margin-top: 4px; line-height: 1.4;">
+                        <strong>Reason:</strong> {{ item.error or 'Platform API credentials not configured.' }}
+                    </div>
+                    {% endif %}
+
+                    <div style="font-size: 11px; color: #8fa0ba; margin-top: 8px; border-top: 1px solid #edf1f7; padding-top: 6px;">
+                        Checked: {{ item.timestamp }}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="price-source-card">
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong>Amazon</strong>
+                        <span class="price-badge-unavailable">Price Unavailable</span>
+                    </div>
+                    <div style="font-size: 12px; color: #8c6000; margin-top: 6px;">Reason: Amazon PA-API credentials not configured.</div>
+                </div>
+                <div class="price-source-card">
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong>Flipkart</strong>
+                        <span class="price-badge-unavailable">Price Unavailable</span>
+                    </div>
+                    <div style="font-size: 12px; color: #8c6000; margin-top: 6px;">Reason: Flipkart Affiliate API credentials not configured.</div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 3. Canonical E-Commerce Rating Distribution & AI Explanation -->
+    <div class="intelligence-grid">
+        <div class="card">
+            <h3>⭐ {{ source_name }} Rating Distribution</h3>
+            <p style="color: #60708f; font-size: 13px; margin: 0 0 14px;">
+                Canonical rating verified from {{ source_name }} e-commerce data.
+            </p>
+
+            <div class="rating-hero-display">
+                <div style="text-align: center; padding-right: 20px; border-right: 1px solid #edf1f7;">
+                    <div class="rating-big-num">{{ product.overall_rating }}</div>
+                    <div class="rating-big-stars">
+                        {% for i in range(1, 6) %}
+                            {% if product.overall_rating >= i %}★
+                            {% elif product.overall_rating >= i - 0.5 %}★
+                            {% else %}☆{% endif %}
+                        {% endfor %}
+                    </div>
+                    <div style="font-size: 12px; color: #71809a;">{{ review_statistics.available }} total ratings</div>
+                </div>
+
+                <div style="flex: 1;">
+                    <div class="star-dist-list">
+                        {% for star in [5, 4, 3, 2, 1] %}
+                        <div class="star-dist-row">
+                            <span class="star-dist-label">{{ star }} Star</span>
+                            <div class="star-dist-track">
+                                <div class="star-dist-fill" style="width: {{ rating_dist.percentages[star] }}%;"></div>
+                            </div>
+                            <span class="star-dist-pct">{{ rating_dist.percentages[star] }}%</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <h3>💡 Why is the Rating {{ product.overall_rating }}/5?</h3>
+                <p style="color: #60708f; font-size: 13px; margin: 0 0 12px;">
+                    AI Agent synthesis of customer opinions and feature performance.
+                </p>
+
+                <div class="ai-explanation-box">
+                    <div class="ai-explanation-title">
+                        🤖 AI Customer Intelligence Synthesis
+                    </div>
+                    <p class="ai-explanation-text">
+                        "{{ ai_explanation }}"
+                    </p>
+                </div>
+            </div>
+
+            <div style="font-size: 12px; color: #71809a; margin-top: 14px; border-top: 1px solid #edf1f7; padding-top: 8px;">
+                Synthesized across {{ review_statistics.analyzed }} collected customer reviews.
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Dynamic Customer Opinion by Product Feature -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <h3>🎯 Customer Opinion by Feature</h3>
+            <span style="font-size: 13px; color: #2864e8; font-weight: bold;">
+                Category: {{ product.category|title if product.category else 'General' }}
+            </span>
+        </div>
+
+        {% if aspect_intel %}
+        <div class="aspect-cards-grid">
+            {% for asp_key, asp in aspect_intel.items() %}
+            <div class="aspect-card" onclick="openAspectModal('{{ asp_key }}')">
+                <div class="aspect-card-header">
+                    <span class="aspect-card-title">{{ asp.icon }} {{ asp.name }}</span>
+                    <span class="aspect-card-score">{{ asp.score }}/5</span>
+                </div>
+                <div style="color: #f4a000; font-size: 12px; letter-spacing: 1px;">{{ asp.stars }}</div>
+                <div class="aspect-meter">
+                    <div class="aspect-meter-pos" style="width: {{ asp.positive_percent }}%;"></div>
+                    <div class="aspect-meter-neu" style="width: {{ asp.neutral_percent }}%;"></div>
+                    <div class="aspect-meter-neg" style="width: {{ asp.negative_percent }}%;"></div>
+                </div>
+                <div class="aspect-meter-labels">
+                    <span style="color: #18a54a; font-weight: bold;">Pos: {{ asp.positive_percent }}%</span>
+                    <span style="color: #ed2c2c; font-weight: bold;">Neg: {{ asp.negative_percent }}%</span>
+                </div>
+                <div style="font-size: 12px; color: #2864e8; margin-top: 8px; font-weight: bold;">
+                    View {{ asp.total_mentions }} mentions →
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="color: #60708f;">No distinct feature discussions detected in extracted reviews.</div>
+        {% endif %}
+    </div>
+
+    <!-- 4. Review Trust Intelligence & Suspicion Tiers -->
+    <div class="card">
+        <h3>🛡️ Review Trust Intelligence</h3>
+        
+        <!-- Suspicion Tiers -->
+        <div class="tiers-grid">
+            <div class="tier-pill tier-high">
+                <strong>{{ suspicion_tiers.high }}</strong> High Suspicion
+            </div>
+            <div class="tier-pill tier-med">
+                <strong>{{ suspicion_tiers.medium }}</strong> Medium Suspicion
+            </div>
+            <div class="tier-pill tier-low">
+                <strong>{{ suspicion_tiers.low }}</strong> Low Suspicion / Authentic
+            </div>
+        </div>
+
+        <div class="suspicious-grid">
+            <div>
+                <h4 style="margin: 0 0 10px; font-size: 14px;">Risk Concentration by Aspect</h4>
+                <table class="suspicious-table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Analyzed</th>
+                            <th>Potentially Suspicious</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for asp_key, data in suspicious_aspect_stats.breakdown.items() %}
+                        <tr>
+                            <td><strong>{{ data.name }}</strong></td>
+                            <td>{{ data.analyzed }}</td>
+                            <td>
+                                {% if data.suspicious > 0 %}
+                                <span style="color: #d12e2e; font-weight: bold;">{{ data.suspicious }}</span>
+                                {% else %}
+                                <span style="color: #18a54a;">0</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div>
+                <h4 style="margin: 0 0 10px; font-size: 14px;">Flagged Signals &amp; Duplicate Clusters</h4>
+                
+                {% if review_clusters %}
+                {% for cluster in review_clusters %}
+                <div class="cluster-card">
+                    <div style="font-weight: bold; font-size: 13px; color: #8c6000;">
+                        ⚠️ Potential Cluster: {{ cluster.count }} similar reviews ({{ cluster.similarity_percent }}% similarity)
+                    </div>
+                    <div style="font-size: 12px; color: #594100; margin-top: 4px;">
+                        <em>"{{ cluster.common_pattern }}"</em>
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                {% if suspicious_reviews %}
+                {% for sr in suspicious_reviews[:2] %}
+                <div class="suspicious-card">
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                        <span style="color: #d12e2e; font-weight: bold;">⚠️ {{ sr.status }} ({{ sr.tier }})</span>
+                        <span style="color: #d12e2e; font-weight: bold;">Score: {{ sr.suspicion_score }}/100</span>
+                    </div>
+                    <div style="font-size: 13px; font-style: italic; color: #2d3748; margin-bottom: 8px;">
+                        "{{ sr.text }}"
+                    </div>
+                    <div style="font-size: 12px; color: #872020;">
+                        {% for ev in sr.evidence %}
+                        <div>✓ {{ ev }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div style="color: #60708f; font-size: 13px;">No suspicious review signals identified.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. All Extracted Customer Reviews -->
+    <div class="card">
+        <h3>💬 Complete Analyzed Review Collection ({{ review_statistics.analyzed }})</h3>
+        {% if reviews %}
+            {% for review in reviews %}
+            <div class="review-item">
+                <div class="review-header">
+                    <div>
+                        <strong style="color: #f4a000;">{{ review.rating }} ⭐</strong>
+                        {% if review.title %}
+                        <strong style="margin-left: 8px; color: #102a56;">{{ review.title }}</strong>
+                        {% endif %}
+                        {% if review.verified_purchase %}
+                        <span style="background: #eaf8ef; color: #127a34; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 8px; font-weight: bold;">
+                            ✓ Verified Purchase
+                        </span>
+                        {% endif %}
+                    </div>
+                    <span class="sentiment-badge {% if review.sentiment == 'Positive' %}sentiment-positive{% elif review.sentiment == 'Negative' %}sentiment-negative{% else %}sentiment-neutral{% endif %}">
+                        {{ review.sentiment }}
+                    </span>
+                </div>
+                
+                <div style="font-size: 14px; line-height: 1.5; color: #222;">
+                    {{ review.text }}
+                </div>
+
+                {% if review.date %}
+                <div style="font-size: 12px; color: #71809a; margin-top: 6px;">
+                    Date: {{ review.date }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <div style="color: #60708f;">No reviews could be parsed from this product URL.</div>
+        {% endif %}
+    </div>
+
+    {% endif %}
+
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="{{ url_for('index') }}" class="back-button">
+            ← Analyze Another Product
+        </a>
+    </div>
+
+</main>
+
+<!-- Interactive Aspect Modal -->
+<div class="modal-backdrop" id="aspectModalBackdrop" onclick="closeAspectModal(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeAspectModal(null)">✕</button>
+        <h3 id="modalAspectTitle" style="margin: 0 0 4px; font-size: 22px; color: #102a56;">Feature Analysis</h3>
+        <div id="modalAspectStars" style="color: #f4a000; font-size: 16px; margin-bottom: 10px;"></div>
+        <div id="modalAspectStats" style="display: flex; gap: 12px; font-size: 13px; background: #f8fbff; padding: 10px; border-radius: 6px; margin-bottom: 14px;"></div>
+
+        <div id="modalPositives" style="margin-bottom: 12px;">
+            <h4 style="margin: 0 0 6px; font-size: 13px; color: #127a34;">Common Positive Highlights</h4>
+            <ul id="modalPositivesList" style="margin: 0; padding-left: 18px; font-size: 13px; color: #127a34;"></ul>
+        </div>
+
+        <div id="modalNegatives" style="margin-bottom: 12px;">
+            <h4 style="margin: 0 0 6px; font-size: 13px; color: #b52222;">Common Complaints</h4>
+            <ul id="modalNegativesList" style="margin: 0; padding-left: 18px; font-size: 13px; color: #b52222;"></ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    const aspectDataset = {{ aspect_intel | tojson | safe if aspect_intel else '{}' }};
+
+    function openAspectModal(aspectKey) {
+        const data = aspectDataset[aspectKey];
+        if (!data) return;
+
+        document.getElementById('modalAspectTitle').innerText = data.name + " Intelligence";
+        document.getElementById('modalAspectStars').innerText = data.stars + " (" + data.score + " / 5)";
+
+        document.getElementById('modalAspectStats').innerHTML = `
+            <div>Sentiment: <strong>${data.status}</strong></div>
+            <div>•</div>
+            <div>Mentions: <strong>${data.total_mentions}</strong></div>
+            <div>•</div>
+            <div style="color: #18a54a;">Pos: <strong>${data.positive_percent}%</strong></div>
+            <div>•</div>
+            <div style="color: #ed2c2c;">Neg: <strong>${data.negative_percent}%</strong></div>
+        `;
+
+        const posList = document.getElementById('modalPositivesList');
+        posList.innerHTML = '';
+        if (data.positive_comments && data.positive_comments.length > 0) {
+            document.getElementById('modalPositives').style.display = 'block';
+            data.positive_comments.forEach(c => {
+                const li = document.createElement('li');
+                li.innerText = c;
+                posList.appendChild(li);
+            });
+        } else {
+            document.getElementById('modalPositives').style.display = 'none';
+        }
+
+        const negList = document.getElementById('modalNegativesList');
+        negList.innerHTML = '';
+        if (data.negative_comments && data.negative_comments.length > 0) {
+            document.getElementById('modalNegatives').style.display = 'block';
+            data.negative_comments.forEach(c => {
+                const li = document.createElement('li');
+                li.innerText = c;
+                negList.appendChild(li);
+            });
+        } else {
+            document.getElementById('modalNegatives').style.display = 'none';
+        }
+
+        document.getElementById('aspectModalBackdrop').style.display = 'flex';
+    }
+
+    function closeAspectModal(event) {
+        if (!event || event.target.id === 'aspectModalBackdrop') {
+            document.getElementById('aspectModalBackdrop').style.display = 'none';
+        }
+    }
+</script>
+
+</body>
+</html>

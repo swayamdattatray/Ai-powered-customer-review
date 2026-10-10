@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login - Customer Review Intelligence</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 430px;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 40px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: #2864e6;
+            color: white;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #12345b;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #58749a;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            color: #12345b;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ccd5e0;
+            border-radius: 8px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2864e6;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: #2864e6;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4fb8;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #842029;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .register {
+            text-align: center;
+            margin-top: 25px;
+            color: #58749a;
+        }
+
+        .register a {
+            color: #2864e6;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="card">
+
+            <div class="logo">
+                AI
+            </div>
+
+            <h1>
+                Customer Review Intelligence
+            </h1>
+
+            <p class="subtitle">
+                AI-Powered Product Review Analysis
+            </p>
+
+            {% if error %}
+
+                <div class="error">
+                    {{ error }}
+                </div>
+
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('login') }}">
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    required
+                >
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    required
+                >
+
+                <button type="submit">
+                    Login
+                </button>
+
+            </form>
+
+            <div class="register">
+
+                Don't have an account?
+
+                <a href="{{ url_for('register') }}">
+                    Register
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

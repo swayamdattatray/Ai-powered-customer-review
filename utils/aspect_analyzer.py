@@ -8,14 +8,15 @@ def analyze_aspects(review_text):
     aspects = {}
 
     keywords = {
-        "camera": ["camera", "photo", "picture"],
-        "battery": ["battery", "charging", "charge"],
-        "performance": ["performance", "speed", "fast", "slow"],
-        "quality": ["quality", "build", "material"],
-        "price": ["price", "cost", "expensive", "cheap"],
-        "delivery": ["delivery", "shipping", "arrived"],
-        "display": ["display", "screen"],
-        "sound": ["sound", "speaker", "audio"]
+        "camera": ["camera", "photo", "picture", "lens", "selfie", "video"],
+        "battery": ["battery", "charging", "charge", "backup", "drain"],
+        "performance": ["performance", "speed", "fast", "slow", "lag", "smooth"],
+        "display": ["display", "screen", "amoled", "oled", "brightness"],
+        "quality": ["quality", "build", "material", "durability", "design"],
+        "price": ["price", "cost", "expensive", "cheap", "value", "worth"],
+        "heating": ["heating", "heat", "warm", "hot", "overheating"],
+        "sound": ["sound", "speaker", "audio", "mic", "volume"],
+        "delivery": ["delivery", "shipping", "arrived", "packaging"]
     }
 
     positive_words = [
